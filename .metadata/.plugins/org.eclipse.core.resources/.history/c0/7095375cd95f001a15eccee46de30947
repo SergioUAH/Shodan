@@ -1,0 +1,11 @@
+package com.uah.shodan_tfg.entrypoints;
+
+import org.springframework.http.ResponseEntity;
+
+public class TargetController {
+
+    public ResponseEntity<Object> searchQuery() {
+
+    }
+
+}

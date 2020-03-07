@@ -1,0 +1,6 @@
+package com.uah.shodan_tfg.entrypoints;
+
+public class TargetController
+	{
+
+}

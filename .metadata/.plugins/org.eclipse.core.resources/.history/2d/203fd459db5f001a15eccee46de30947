@@ -1,0 +1,39 @@
+package com.uah.shodan_tfg.entrypoints;
+
+import org.jboss.logging.Logger;
+import org.springframework.http.HttpRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@CrossOrigin
+@RestController
+public class TargetController {
+
+    private static Logger LOGGER = Logger.getLogger(TargetController.class);
+
+    @PostMapping
+    public ResponseEntity<Object> searchQuery(HttpRequest request) {
+	try {
+	    LOGGER.info("Search Query");
+	    return new ResponseEntity<>(null, HttpStatus.OK);
+	} catch (Exception e) {
+	    LOGGER.error(e.getMessage(), e);
+	    return new ResponseEntity<>(null, HttpStatus.OK);
+	}
+    }
+
+    @PostMapping
+    public ResponseEntity<Object> getDetail(HttpRequest request) {
+	try {
+	    LOGGER.info(request);
+	    return new ResponseEntity<>(null, HttpStatus.OK);
+	} catch (Exception e) {
+	    LOGGER.error(e.getMessage(), e);
+	    return new ResponseEntity<>(null, HttpStatus.OK);
+	}
+    }
+
+}

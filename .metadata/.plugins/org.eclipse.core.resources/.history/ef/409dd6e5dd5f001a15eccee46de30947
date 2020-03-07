@@ -1,0 +1,5 @@
+package com.uah.shodan_tfg.common;
+
+public enum Ports {
+
+}

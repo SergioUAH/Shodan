@@ -1,0 +1,14 @@
+package com.uah.shodan_tfg.entrypoints;
+
+import org.springframework.http.ResponseEntity;
+
+import retrofit2.Response;
+
+public class TargetController {
+    
+    
+    public ResponseEntity<Object> searchQuery(){
+	
+    }
+
+}

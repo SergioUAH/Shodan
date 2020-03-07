@@ -1,0 +1,23 @@
+package com.uah.shodan_tfg.entrypoints.dto;
+
+import org.springframework.data.annotation.Id;
+
+import com.uah.shodan_tfg.common.Location;
+
+public class QueryDTO {
+
+    @Id
+    private Integer Id;
+
+    private String ip;
+
+    private Integer port;
+
+    private String location;
+
+    private String operatingSystem;
+
+    private Location country;
+
+    private String org;
+}
