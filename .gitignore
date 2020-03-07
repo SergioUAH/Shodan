@@ -1,0 +1,4 @@
+.metadata
+shodan_tfg/target/
+shodan-webapp/node_modules/
+shodan-webapp/e2e/
