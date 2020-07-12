@@ -1,9 +1,0 @@
-package com.uah.shodan_tfg.entrypoints.dto;
-
-public class QueryDTO {
-    
-    @Id
-    Integer Id;
-    
-    
-}

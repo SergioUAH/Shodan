@@ -3,3 +3,5 @@ shodan-webapp/node_modules/
 shodan-webapp/e2e/
 *.class
 .metadata/
+*.db
+.factorypath/
