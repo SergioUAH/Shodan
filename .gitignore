@@ -1,7 +1,8 @@
 shodan_tfg/target/
+shodan_tfg/database/
 shodan-webapp/node_modules/
 shodan-webapp/e2e/
 *.class
 .metadata/
-*.db
-.factorypath/
+shodan_tfg/.factorypath
+shodan_tfg/.settings/
