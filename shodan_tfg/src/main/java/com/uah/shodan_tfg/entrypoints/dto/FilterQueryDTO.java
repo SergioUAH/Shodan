@@ -1,24 +1,27 @@
 package com.uah.shodan_tfg.entrypoints.dto;
 
-import org.springframework.data.annotation.Id;
+import lombok.Builder;
+import lombok.Data;
 
+@Builder
+@Data
 public class FilterQueryDTO {
 
-    @Id
     private Integer id;
 
-    private HostDTO host;
+    private String query;
+    private String facets;
 
-    private LocationDTO location;
-
-    private String organization;
-
-    public FilterQueryDTO(Integer id, HostDTO host, LocationDTO location, String organization) {
-	super();
-	this.id = id;
-	this.host = host;
-	this.location = location;
-	this.organization = organization;
-    }
+//    private String organization;
+//    private String[] hostnames;
+//    private String ip;
+//    private Integer port;
+//    private String operatingSystem;
+//
+//    private String country;
+//    private String city;
+//    private Double latitude;
+//    private Double longitude;
+//    private Double radius;
 
 }

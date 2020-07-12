@@ -1,0 +1,6 @@
+<div class="form-style col-11">
+  <mat-action-list *ngFor="let query of history; index as i;" style="padding: 0px">
+    <button mat-list-item id="query" [matTooltip]="query.query.length > 45 ? query.query : null" (click)="addQuery(query)">{{query.query.length > 45 ? query.query.substring(0,46) + '...' : query.query}}</button>
+    <mat-divider *ngIf="i <= history.length"></mat-divider>
+  </mat-action-list>
+</div>

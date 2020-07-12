@@ -1,0 +1,24 @@
+<div class="form-style col-11">
+  <form>
+    <mat-form-field>
+      <mat-chip-list #chipList aria-label="Filter selection">
+        <mat-chip *ngFor="let filter of filters" [selectable]="selectable" [removable]="removable"
+          (removed)="remove(filter)">
+          {{filter}}
+          <mat-icon matChipRemove [hidden]="!removable">cancel</mat-icon>
+        </mat-chip>
+        <input placeholder="Ex. country:ES..." #searchQuery #filterInput [formControl]="myControl" [matAutocomplete]="auto"
+          [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+          (matChipInputTokenEnd)="add($event)">
+      </mat-chip-list>
+      <mat-hint align="start"><strong>Type in your search query</strong> </mat-hint>
+      <mat-hint align="end">{{searchQuery.value.length}} / 256</mat-hint>
+      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
+        <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+          {{option}}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+    <button mat-raised-button color="primary" (click)="searchDevices()">Search</button>
+  </form>
+</div>

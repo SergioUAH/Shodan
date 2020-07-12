@@ -1,0 +1,12 @@
+<div class="col-md-12 kt-margin-bottom-20-mobile">
+  <mat-form-field>
+    <mat-select [(value)]="selectedColumn" name="columna" placeholder="Columna">
+      <mat-option *ngFor="let column of columnas" [value]="column">
+        {{getValue(column)}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field class="col-10">
+    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Buscar">
+  </mat-form-field>
+</div>

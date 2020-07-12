@@ -1,2 +1,9 @@
 server:
   port: 8085
+spring:    h2:      console:        enabled: true
+    datasource:      url: jdbc:h2:file:./database/data      driver-class-name: org.h2.Driver
+      username: admin
+      password: 5h0d4n4pp
+    jpa:
+      database-platform: org.hibernate.dialect.H2Dialect         hibernate:        ddl-auto: create-drop
+        
