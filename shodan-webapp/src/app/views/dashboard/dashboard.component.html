@@ -15,7 +15,7 @@
 </div>
 
 <div class="content main-body" role="main" style="justify-content: space-evenly; background-color: #1e1e29;">
-  <div class="card col-4" style="display:block; align-items: center; height: 485px;">
+  <div class="card col-4" style="display:block; align-items: center; height: 622px;">
     <div class="card-header">
       <h3 class="card-title">Search Query</h3>
     </div>
@@ -26,10 +26,11 @@
     </div>
     <app-divisor (searchQuery)="searchDevices($event)" class="col-12"></app-divisor>
   </div>
-  <div class="card col-7" style="align-items: center">
+  <div class="card col-7" style="align-items: center;display:block;">
     <div class="card-header">
       <h3 class="card-title">Found hosts</h3>
     </div>
+    <app-filtro [data]="dataSource" [isTableFilter]="true" class="col-12"></app-filtro>
     <app-tabla *ngIf="!loading" [data]="dataSource" [displayedColumns]="displayedColumns" [hasPaginator]="true" class="col-12">
     </app-tabla>
   </div>

@@ -8,7 +8,7 @@ import { MatAutocomplete, MatAutocompleteSelectedEvent } from '@angular/material
 import { MatChipInputEvent } from '@angular/material/chips';
 
 import { RestService } from 'src/app/config/services/rest-service';
-import { FILTROS } from '../filtro/filtros';
+import { FILTROS_SHODAN } from '../filtro/filtros';
 import { environment } from 'src/environments/environment';
 import { MatOption } from '@angular/material/core';
 import { MatTableDataSource } from '@angular/material/table';
@@ -59,7 +59,7 @@ export class QueryFormComponent implements OnInit, AfterViewInit {
   stringQuery: string;
 
   myControl = new FormControl();
-  options = FILTROS;
+  options = FILTROS_SHODAN;
   filteredOptions: Observable<string[]>;
 
   visible = true;

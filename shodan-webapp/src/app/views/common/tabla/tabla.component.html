@@ -29,6 +29,7 @@
     <mat-header-cell *matHeaderCellDef mat-sort-header> Hostname </mat-header-cell>
     <mat-cell *matCellDef="let element" [matTooltip]="element.hostname"> {{ element.hostname.length > 15 ? element.hostname.substring(0,16) : element.hostname }} </mat-cell>
   </ng-container>
+
   <!-- Fecha Column -->
   <ng-container matColumnDef="os">
     <mat-header-cell *matHeaderCellDef mat-sort-header> OS</mat-header-cell>
@@ -43,17 +44,22 @@
   <!-- Fecha Column -->
   <ng-container matColumnDef="country">
     <mat-header-cell *matHeaderCellDef mat-sort-header> Country </mat-header-cell>
-    <mat-cell *matCellDef="let element"> {{ element.location.country }} </mat-cell>
+    <mat-cell *matCellDef="let element"> {{ element.country }} </mat-cell>
   </ng-container>
 
   <!-- Fecha Column -->
   <ng-container matColumnDef="city">
     <mat-header-cell *matHeaderCellDef mat-sort-header> City </mat-header-cell>
-    <mat-cell *matCellDef="let element"> {{ element.location.city }} </mat-cell>
+    <mat-cell *matCellDef="let element"> {{ element.city }} </mat-cell>
   </ng-container>
 
   <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
   <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="showDetail(row)"></mat-row>
+  <mat-row *matNoDataRow=""></mat-row>
+    <!-- Row shown when there is no matching data. -->
+    <mat-row *matNoDataRow>
+      <mat-cell colspan="4">No hosts matching the filter</mat-cell>
+    </mat-row>
 </mat-table>
 
 <mat-paginator class="paginator" [hidden]="!hasPaginator" [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>

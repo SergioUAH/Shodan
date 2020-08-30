@@ -7,9 +7,9 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.fooock.shodan.model.banner.Banner;
-import com.uah.shodan_tfg.core.entities.FilterQuery;
-import com.uah.shodan_tfg.core.entities.Host;
-import com.uah.shodan_tfg.core.entities.Location;
+import com.uah.shodan_tfg.dataproviders.dao.FilterQuery;
+import com.uah.shodan_tfg.dataproviders.dao.Host;
+import com.uah.shodan_tfg.dataproviders.dao.Location;
 
 @Service
 public class HostReportConverter implements Converter<Banner, Host> {
@@ -18,8 +18,7 @@ public class HostReportConverter implements Converter<Banner, Host> {
     public Host convert(Banner banner) {
 
 	Host host = new Host();
-	host.setHostname(banner.getHostnames() != null && !Arrays.asList(banner.getHostnames())
-		.isEmpty()
+	host.setHostname(banner.getHostnames() != null && !Arrays.asList(banner.getHostnames()).isEmpty()
 		? banner.getHostnames()[0]
 		: "unknown");
 	host.setIp(banner.getIpStr());

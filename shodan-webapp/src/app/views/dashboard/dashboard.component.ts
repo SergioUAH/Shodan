@@ -92,6 +92,7 @@ export class DashboardComponent implements OnInit {
       .subscribe(data => {
         this.responseData = data;
         console.log(this.responseData);
+        this.parseResponseData(this.responseData);
         this.dataSource = new MatTableDataSource(this.responseData);
         this.loading = false;
         this.cdr.markForCheck();
@@ -110,6 +111,7 @@ export class DashboardComponent implements OnInit {
       .subscribe(data => {
         this.responseData = data;
         console.log(this.responseData);
+        this.parseResponseData(this.responseData);
         this.dataSource = new MatTableDataSource(this.responseData);
         this.loading = false;
         this.cdr.markForCheck();
@@ -121,4 +123,20 @@ export class DashboardComponent implements OnInit {
         this.cdr.markForCheck();
       });
   }
+
+  parseResponseData(resp) {
+    resp.forEach(function(part, index) {
+      resp[index] = {
+        ...resp[index],
+        country: resp[index].location.country,
+        city: resp[index].location.city
+      };
+      delete resp[index].location;
+    }, resp);
+
+    console.log("resp es parseada: ", resp)
+
+    return resp;
+  }
+
 }

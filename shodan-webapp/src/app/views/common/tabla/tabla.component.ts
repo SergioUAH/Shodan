@@ -83,6 +83,7 @@ export class TablaComponent implements OnInit {
     .subscribe(data => {
       console.log("Successful");
       this.responseData = data;
+      console.log(this.responseData);
       // this.dataSource = new MatTableDataSource(this.responseData);
     },
     error => {

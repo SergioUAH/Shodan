@@ -16,4 +16,5 @@ public class HostDTO {
     private String os;
 
     private LocationDTO location;
+
 }

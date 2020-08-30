@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fooock.shodan.ShodanRestApi;
 import com.fooock.shodan.model.host.HostReport;
 import com.uah.shodan_tfg.core.converters.HostReportConverter;
-import com.uah.shodan_tfg.core.entities.Host;
-import com.uah.shodan_tfg.core.services.TargetService;
+import com.uah.shodan_tfg.core.services.impl.TargetService;
+import com.uah.shodan_tfg.dataproviders.dao.Host;
 import com.uah.shodan_tfg.entrypoints.dto.FilterQueryDTO;
 import com.uah.shodan_tfg.entrypoints.dto.HostDTO;
 
@@ -90,7 +90,7 @@ public class TargetController {
     public ResponseEntity<Object> testDevices(@RequestBody List<Integer> ids, HttpServletRequest request) {
 	try {
 	    LOGGER.info("Test devices: " + request.getRequestURI());
-//	    service.testSecurity();
+	    service.testSecurityByIds(ids);
 	    return new ResponseEntity<>(1, HttpStatus.OK);
 	} catch (Exception e) {
 	    LOGGER.error(e.getMessage(), e);

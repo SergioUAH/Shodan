@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.uah.shodan_tfg.core.entities.Host;
-import com.uah.shodan_tfg.core.entities.Location;
+import com.uah.shodan_tfg.dataproviders.dao.Host;
+import com.uah.shodan_tfg.dataproviders.dao.Location;
 import com.uah.shodan_tfg.entrypoints.dto.HostDTO;
 import com.uah.shodan_tfg.entrypoints.dto.LocationDTO;
 
@@ -49,11 +49,8 @@ public class HostConverter implements Converter<HostDTO, Host> {
 		.countryCode(location.getCountryCode()).city(location.getCity()).latitude(location.getLatitude())
 		.longitude(location.getLongitude()).build();
 
-	HostDTO hostDto = HostDTO.builder().id(host.getId()).hostname(host
-		.getHostname())
-		.ip(host.getIp())
-		.port(host.getPort())
-		.os(host.getOperatingSystem()).location(locationDto).build();
+	HostDTO hostDto = HostDTO.builder().id(host.getId()).hostname(host.getHostname()).ip(host.getIp())
+		.port(host.getPort()).os(host.getOperatingSystem()).location(locationDto).build();
 
 	return hostDto;
     }

@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.uah.shodan_tfg.core.entities.FilterQuery;
+import com.uah.shodan_tfg.dataproviders.dao.FilterQuery;
 import com.uah.shodan_tfg.entrypoints.dto.FilterQueryDTO;
 
 @Service
@@ -45,6 +45,5 @@ public class FilterQueryConverter implements Converter<FilterQueryDTO, FilterQue
 	}
 	return filtersDTO;
     }
-
 
 }

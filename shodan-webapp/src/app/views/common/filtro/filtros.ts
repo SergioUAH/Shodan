@@ -1,4 +1,4 @@
-export const FILTROS: string[] = [
+export const FILTROS_SHODAN: string[] = [
   'all:',
   'asn:',
   'city:',
@@ -70,5 +70,14 @@ export const FILTROS: string[] = [
   'telnet.will:',
   'telnet.wont:',
   'ssh.hassh:',
-  'ssh.type:'
+  'ssh.type:',
+];
+
+export const FILTROS_TABLA: string[] = [
+  'ip:',
+  'hostname:',
+  'os:',
+  'port:',
+  'country:',
+  'city:',
 ];

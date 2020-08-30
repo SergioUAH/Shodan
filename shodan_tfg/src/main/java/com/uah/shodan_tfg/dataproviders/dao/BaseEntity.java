@@ -1,4 +1,4 @@
-package com.uah.shodan_tfg.core.entities;
+package com.uah.shodan_tfg.dataproviders.dao;
 
 import java.util.Date;
 
