@@ -1,9 +1,10 @@
-import { Component, OnInit, ChangeDetectionStrategy, ViewEncapsulation, Inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ViewEncapsulation, Inject, ChangeDetectorRef, Output, EventEmitter } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { RestService } from 'src/app/config/services/rest-service';
 import { environment } from 'src/environments/environment';
 import { Content } from '@angular/compiler/src/render3/r3_ast';
+import { QueryElement } from '../query-form/query-form.component';
 
 export class Host {
   id: number;
@@ -41,17 +42,14 @@ export class ModalComponent implements OnInit {
   ngOnInit(): void {
     this.loading = true;
     this.row = this.data.content;
-    console.log(this.row);
     this.getDetail();
   }
 
   getDetail() {
     this.http.getCall(environment.url + REST_URL + this.row.id)
     .subscribe(data => {
-      console.log("Successful");
       this.responseData = data;
-      console.log(this.responseData);
-     this.loading = false;
+      this.loading = false;
       this.cdr.markForCheck();
     },
     error => {
@@ -66,19 +64,7 @@ export class ModalComponent implements OnInit {
   }
 
   testSecurity() {
-    this.http.getCall(environment.url + TEST_SECURITY_URL + this.row.id)
-    .subscribe(data => {
-      console.log("Successful");
-      this.responseData = data;
-      console.log(this.responseData);
-      this.loading = false;
-      this.cdr.markForCheck();
-    },
-    error => {
-      console.log("Error", error);
-      this.loading = false;
-      this.cdr.markForCheck();
-    });
+    this.dialogRef.close(this.row.id);
   }
 
   goToURL() {

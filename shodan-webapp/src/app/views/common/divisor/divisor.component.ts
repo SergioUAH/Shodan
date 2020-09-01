@@ -23,7 +23,6 @@ export class DivisorComponent implements OnInit {
   }
 
   getQueries() {
-    console.log("Get Queries");
     this.loading = true;
     this.http.getCall(environment.url + QUERY_HISTORY)
       .subscribe(data => {
@@ -41,7 +40,6 @@ export class DivisorComponent implements OnInit {
 
   addQuery(query) {
     this.searchQuery.emit(query);
-    console.log(query);
   }
 
 }

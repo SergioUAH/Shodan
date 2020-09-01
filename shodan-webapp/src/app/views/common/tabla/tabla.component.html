@@ -55,15 +55,10 @@
 
   <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
   <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="showDetail(row)"></mat-row>
-  <mat-row *matNoDataRow=""></mat-row>
-    <!-- Row shown when there is no matching data. -->
-    <mat-row *matNoDataRow>
-      <mat-cell colspan="4">No hosts matching the filter</mat-cell>
-    </mat-row>
 </mat-table>
 
 <mat-paginator class="paginator" [hidden]="!hasPaginator" [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
 
 <section class="row" style="margin: 2%; justify-content: flex-end;">
-  <button mat-raised-button color="primary" (click)="testDevices()">Test security!</button>
+  <button mat-raised-button color="primary" (click)="testDevices(undefined)">Test security!</button>
 </section>

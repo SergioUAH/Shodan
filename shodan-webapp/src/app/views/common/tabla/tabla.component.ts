@@ -7,8 +7,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { SelectionModel } from '@angular/cdk/collections';
 import { environment } from 'src/environments/environment';
-
-const REST_URL = "/target/testDevices";
+import { TestSecurityModalComponent } from '../test-security-modal/test-security-modal.component';
 
 @Component({
   selector: 'app-tabla',
@@ -51,7 +50,11 @@ export class TablaComponent implements OnInit {
           content: row,
         }
       });
-    dialogRef.afterClosed();
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.testDevices(result);
+      }
+    });
   }
 
   /** Whether the number of selected elements matches the total number of rows. */
@@ -75,21 +78,20 @@ export class TablaComponent implements OnInit {
     return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`;
   }
 
-  testDevices() {
-    let devices = this.selection.selected.map(device => device.id);
-    console.log(devices);
-
-    this.http.postCall(environment.url + REST_URL, devices)
-    .subscribe(data => {
-      console.log("Successful");
-      this.responseData = data;
-      console.log(this.responseData);
-      // this.dataSource = new MatTableDataSource(this.responseData);
-    },
-    error => {
-      console.log("Error", error);
-      // this.dataSource = new MatTableDataSource();
-    });
+  testDevices(id) {
+    console.log('new event');
+    let devices = id ? [id] : this.selection.selected.map(device => device.id);
+    const dialogRef = this.dialog.open(TestSecurityModalComponent,
+      {
+        width: "30%",
+        height: "50%",
+        data:
+        {
+          isDetail: true,
+          content: devices,
+        }
+      });
+    dialogRef.afterClosed();
   }
 
 }

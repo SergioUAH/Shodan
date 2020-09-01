@@ -3,6 +3,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { RestService } from 'src/app/config/services/rest-service';
 import { QueryFormComponent } from '../common/query-form/query-form.component';
 import { environment } from 'src/environments/environment';
+import { DivisorComponent } from '../common/divisor/divisor.component';
 
 export class HostElement {
   id: number;
@@ -74,6 +75,7 @@ export class DashboardComponent implements OnInit {
   query: QueryElement;
   loading = false;
 
+  @ViewChild(DivisorComponent, {static: true}) divisorComp: DivisorComponent;
   constructor(public http: RestService, public cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
@@ -95,6 +97,7 @@ export class DashboardComponent implements OnInit {
         this.parseResponseData(this.responseData);
         this.dataSource = new MatTableDataSource(this.responseData);
         this.loading = false;
+        this.divisorComp.getQueries();
         this.cdr.markForCheck();
       },
       error => {
@@ -133,8 +136,6 @@ export class DashboardComponent implements OnInit {
       };
       delete resp[index].location;
     }, resp);
-
-    console.log("resp es parseada: ", resp)
 
     return resp;
   }

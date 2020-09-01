@@ -32,12 +32,14 @@ import { ModalComponent } from './views/common/modal/modal.component';
 import { FiltroComponent } from './views/common/filtro/filtro.component';
 import { TablaComponent } from './views/common/tabla/tabla.component';
 import { RestService } from './config/services/rest-service';
+import { WebSocketService } from './config/services/web-socket-service';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { QueryFormComponent } from './views/common/query-form/query-form.component';
 import { ENTER, COMMA, TAB } from '@angular/cdk/keycodes';
 import { DivisorComponent } from './views/common/divisor/divisor.component';
+import { TestSecurityModalComponent } from './views/common/test-security-modal/test-security-modal.component';
 
 
 @NgModule({
@@ -48,7 +50,8 @@ import { DivisorComponent } from './views/common/divisor/divisor.component';
     FiltroComponent,
     DashboardComponent,
     QueryFormComponent,
-    DivisorComponent
+    DivisorComponent,
+    TestSecurityModalComponent
   ],
   imports: [
     BrowserModule,
@@ -82,6 +85,7 @@ import { DivisorComponent } from './views/common/divisor/divisor.component';
   ],
   providers: [
     RestService,
+    WebSocketService,
     { provide: MAT_CHIPS_DEFAULT_OPTIONS,
       useValue: {
         separatorKeyCodes: [TAB, COMMA]

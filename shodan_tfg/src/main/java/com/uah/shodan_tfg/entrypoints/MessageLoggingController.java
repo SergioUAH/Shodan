@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.uah.shodan_tfg.entrypoints.dto.LogMessageDTO;
 import com.uah.shodan_tfg.entrypoints.dto.LogOutput;
 
-@CrossOrigin(origins = "http://localhost:4200")
-@RequestMapping("/messageLogging")
+@CrossOrigin(origins = "ws://localhost:4200")
+@RequestMapping("/log")
 @RestController
 public class MessageLoggingController {
 
     @MessageMapping("/chat")
-    @SendTo("/topic/messages")
+    @SendTo("/logger/connectionLog")
     public LogOutput send(LogMessageDTO message) throws Exception {
 	String time = "[" + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()) + "]";
 	return new LogOutput(message.getText(), time);

@@ -154,7 +154,6 @@ export class QueryFormComponent implements OnInit, AfterViewInit {
   searchDevices() {
     this.query.query = this.filters.join(' ');
     this.searchQuery.emit(this.query);
-    console.log(this.query);
   }
 
 }

