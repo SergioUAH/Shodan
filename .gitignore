@@ -2,7 +2,9 @@ shodan_tfg/target/
 shodan_tfg/database/
 shodan-webapp/node_modules/
 shodan-webapp/e2e/
+shodan-webapp/dist/
 *.class
 .metadata/
 shodan_tfg/.factorypath
 shodan_tfg/.settings/
+shodan_tfg/src/main/resources/static
