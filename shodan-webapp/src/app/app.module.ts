@@ -40,7 +40,8 @@ import { QueryFormComponent } from './views/common/query-form/query-form.compone
 import { ENTER, COMMA, TAB } from '@angular/cdk/keycodes';
 import { DivisorComponent } from './views/common/divisor/divisor.component';
 import { TestSecurityModalComponent } from './views/common/test-security-modal/test-security-modal.component';
-
+import { ImportFilesComponent } from './views/import-files/import-files.component';
+import { NgxFileDropModule } from 'ngx-file-drop';
 
 @NgModule({
   declarations: [
@@ -51,7 +52,8 @@ import { TestSecurityModalComponent } from './views/common/test-security-modal/t
     DashboardComponent,
     QueryFormComponent,
     DivisorComponent,
-    TestSecurityModalComponent
+    TestSecurityModalComponent,
+    ImportFilesComponent,
   ],
   imports: [
     BrowserModule,
@@ -82,6 +84,7 @@ import { TestSecurityModalComponent } from './views/common/test-security-modal/t
     RouterTestingModule,
     ReactiveFormsModule,
     FormsModule,
+    NgxFileDropModule,
   ],
   providers: [
     RestService,
