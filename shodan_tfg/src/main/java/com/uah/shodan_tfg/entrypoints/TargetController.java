@@ -36,6 +36,9 @@ public class TargetController {
     private ShodanRestApi api = new ShodanRestApi("");
 
     @Autowired
+    MessageLoggingController webSocketLogging;
+
+    @Autowired
     TargetService service;
 
     @Autowired
@@ -54,7 +57,6 @@ public class TargetController {
 
 		@Override
 		public void onNext(HostReport hostReport) {
-		    LOGGER.info(hostReport.toString());
 		    service.create(query, hostReport.getBanners());
 		}
 
@@ -118,6 +120,19 @@ public class TargetController {
 	    List<FilterQueryDTO> hostsFound = service.findLastQueries();
 
 	    return new ResponseEntity<>(hostsFound, HttpStatus.OK);
+	} catch (Exception e) {
+	    LOGGER.error(e.getMessage(), e);
+	    return new ResponseEntity<>(2, HttpStatus.OK);
+	}
+    }
+
+    @GetMapping("/deleteHosts")
+    public ResponseEntity<Object> deleteHosts(HttpServletRequest request) {
+	try {
+	    LOGGER.info("Delete found hosts: " + request.getRequestURI());
+	    service.deleteHosts();
+
+	    return new ResponseEntity<>(1, HttpStatus.OK);
 	} catch (Exception e) {
 	    LOGGER.error(e.getMessage(), e);
 	    return new ResponseEntity<>(2, HttpStatus.OK);

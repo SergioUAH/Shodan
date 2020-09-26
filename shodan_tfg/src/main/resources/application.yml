@@ -6,4 +6,4 @@ spring:    h2:      console:        enabled: true
       username: admin
       password: 5h0d4n4pp
     jpa:
-      database-platform: org.hibernate.dialect.H2Dialect         hibernate:        ddl-auto: create-drop
+      database-platform: org.hibernate.dialect.H2Dialect         hibernate:        ddl-auto: update

@@ -185,4 +185,9 @@ public class TargetService implements ITargetService {
 	    testSecurity(id, ip, port);
 	}
     }
+
+    @Override
+    public void deleteHosts() {
+	hostRepository.deleteAll();
+    }
 }

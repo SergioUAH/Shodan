@@ -60,5 +60,6 @@
 <mat-paginator class="paginator" [hidden]="!hasPaginator" [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
 
 <section class="row" style="margin: 2%; justify-content: flex-end;">
+  <button mat-raised-button color="primary" style="margin-right: 1em;" (click)="deleteDevices()">Clean</button>
   <button mat-raised-button color="primary" (click)="testDevices(undefined)">Test security!</button>
 </section>

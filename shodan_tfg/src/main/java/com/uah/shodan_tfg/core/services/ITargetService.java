@@ -28,4 +28,6 @@ public interface ITargetService {
 
     void testSecurityByIds(List<Integer> ids);
 
+    void deleteHosts();
+
 }
