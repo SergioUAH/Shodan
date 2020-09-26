@@ -29,10 +29,10 @@ public class MessageLoggingController {
 	return new LogOutput(message.getText(), time);
     }
 
-    public void send() {
+    public void send(String text) {
 	LogMessageDTO message = new LogMessageDTO();
 	String time = "[" + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()) + "]";
-	message.setText("Probando logs --> " + time);
+	message.setText(time + "  >>>  " + text);
 	System.out.println(message.getText());
 	System.out.println("Enviando mensaje --> " + message.getText());
 	this.template.convertAndSend("/topic/connectionLog", message);

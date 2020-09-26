@@ -46,7 +46,8 @@ export class TestSecurityModalComponent implements OnInit, AfterViewInit {
 
   listenEvent(stompEvent) {
     let body = JSON.parse(stompEvent.body)
-    this.textarea = `${body.timestamp} --> ${body.text}`;
+    this.textarea = this.textarea == undefined ? `\n${body.text}\n` : this.textarea + `\n${body.text}\n`;
+    //this.textarea = `\n${body.timeStamp} --> ${body.text}\n`;
   }
 
   // getDetail() {
@@ -102,10 +103,12 @@ export class TestSecurityModalComponent implements OnInit, AfterViewInit {
         this.responseData = data;
         console.log(this.responseData);
         this.webSocket.closeConnection();
+        this.onClose();
       },
         error => {
           console.log("Error", error);
           this.webSocket.closeConnection();
+          this.onClose();
         });
   }
 
