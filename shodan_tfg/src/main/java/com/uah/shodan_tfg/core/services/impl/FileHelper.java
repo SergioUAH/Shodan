@@ -34,9 +34,9 @@ public class FileHelper implements IFileHelper {
     public void writeReport(List<String> reports) {
 	try {
 	    Files.writeString(
-		    Path.of("reports",
-			    "Report_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"))),
-		    reports.toString() + ".txt");
+		    Path.of("reports", "Report_"
+			    + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) + ".txt"),
+		    reports.toString());
 	} catch (IOException e) {
 	    LOGGER.error(e.getMessage(), e);
 	}
@@ -46,9 +46,9 @@ public class FileHelper implements IFileHelper {
     public void writeReport(String report) {
 	try {
 	    Files.writeString(
-		    Path.of("reports",
-			    "Report_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"))),
-		    report + ".txt");
+		    Path.of("reports", "Report_"
+			    + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) + ".txt"),
+		    report);
 	} catch (IOException e) {
 	    LOGGER.error(e.getMessage(), e);
 	}

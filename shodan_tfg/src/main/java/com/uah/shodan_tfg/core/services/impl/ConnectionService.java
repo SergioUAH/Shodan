@@ -154,8 +154,8 @@ public class ConnectionService implements IConnectionService {
 			    System.out.println("FTP Server login response --> " + result);
 			    messageController.send("FTP Server login response --> " + result);
 			    ftpClient.enterLocalPassiveMode();
-			    String foldersTree = "[IP: " + ip + " | PORT: " + port + " | USER: " + username
-				    + " | PASS: " + password + "]\n" + generateFTPTree(ftpClient, "", "/", 0, "");
+			    String foldersTree = "\n{IP: " + ip + " | PORT: " + port + " | USER: " + username
+				    + " | PASS: " + password + "}\n" + generateFTPTree(ftpClient, "", "/", 0, "");
 			    HackedHost hackedHost = new HackedHost(null, ip, username, password, port, foldersTree);
 			    result = foldersTree;
 			    hackedHostRepository.save(hackedHost);
