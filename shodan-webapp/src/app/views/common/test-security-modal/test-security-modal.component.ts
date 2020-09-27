@@ -103,7 +103,6 @@ export class TestSecurityModalComponent implements OnInit, AfterViewInit {
         this.responseData = data;
         console.log(this.responseData);
         this.webSocket.closeConnection();
-        this.onClose();
       },
         error => {
           console.log("Error", error);
