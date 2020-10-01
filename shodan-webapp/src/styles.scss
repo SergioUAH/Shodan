@@ -2,6 +2,7 @@
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming
 @import '~@angular/material/theming';
+@import '~@angular/material/prebuilt-themes/pink-bluegrey.css';
 // Plus imports for other components in your app.
 
 // Include the common styles for Angular Material. We include this here so that you only
@@ -12,20 +13,42 @@
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
-$shodan-webapp-primary: mat-palette($mat-indigo);
-$shodan-webapp-accent: mat-palette($mat-pink, A200, A100, A400);
 
-// The warn palette is optional (defaults to red).
-$shodan-webapp-warn: mat-palette($mat-red);
-
+$shodan-dark-primary: mat-palette($mat-blue-grey);
+$shodan-dark-accent:  mat-palette($mat-amber, A200, A100, A400);
+$shodan-dark-warn:    mat-palette($mat-deep-orange);
 // Create the theme object (a Sass map containing all of the palettes).
-$shodan-webapp-theme: mat-light-theme($shodan-webapp-primary, $shodan-webapp-accent, $shodan-webapp-warn);
-
+$shodan-dark-theme: mat-dark-theme(
+  (
+    color: (
+      primary: $shodan-dark-primary,
+      accent: $shodan-dark-accent,
+      warn: $shodan-dark-warn,
+    ),
+  )
+);
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
-@include angular-material-theme($shodan-webapp-theme);
+@include angular-material-theme($shodan-dark-theme);
 
+$shodan-light-primary: mat-palette($mat-indigo);
+$shodan-light-accent: mat-palette($mat-red, A200, A100, A400);
+$shodan-light-warn: mat-palette($mat-red);
+
+$shodan-light-theme: mat-light-theme(
+  (
+    color: (
+      primary: $shodan-light-primary,
+      accent: $shodan-light-accent,
+      warn: $shodan-light-warn,
+    ),
+  )
+);
+
+.lightMode {
+  @include angular-material-color($shodan-light-theme);
+}
 /* You can add global styles to this file, and also import other style files */
 
 html, body { height: 100%; }
@@ -51,3 +74,6 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .position-static {
 	position: static;
 }
+
+/* Importing Bootstrap SCSS file. */
+@import '~bootstrap/scss/bootstrap';

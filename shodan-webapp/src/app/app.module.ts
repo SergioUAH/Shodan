@@ -40,6 +40,7 @@ import { QueryFormComponent } from './views/common/query-form/query-form.compone
 import { ENTER, COMMA, TAB } from '@angular/cdk/keycodes';
 import { DivisorComponent } from './views/common/divisor/divisor.component';
 import { TestSecurityModalComponent } from './views/common/test-security-modal/test-security-modal.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 
 @NgModule({
@@ -82,6 +83,7 @@ import { TestSecurityModalComponent } from './views/common/test-security-modal/t
     RouterTestingModule,
     ReactiveFormsModule,
     FormsModule,
+    NgbModule,
   ],
   providers: [
     RestService,
