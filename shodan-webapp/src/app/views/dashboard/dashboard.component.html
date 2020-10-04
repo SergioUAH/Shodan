@@ -15,23 +15,27 @@
 </div>
 
 <div role="main">
-  <div class="row">
-    <mat-card class="col-4" style="display:block; align-items: center;">
-      <div class="card-header">
+  <div class="row" style="justify-content: left;">
+    <mat-card class="col-8" style="display:block; align-items: center;">
+      <div class="header">
         <h3 class="card-title">Search Query</h3>
       </div>
       <app-query-form (searchQuery)="searchDevices($event)" class="col-12">
       </app-query-form>
-      <div class="card-header" style="margin-top: 30px;">
+    </mat-card>
+    <mat-card class="col-3" style="align-items: center;display:block;">
+      <div class="header">
         <h3 class="card-title">Last Queries</h3>
       </div>
       <app-divisor (searchQuery)="searchDevices($event)" class="col-12"></app-divisor>
     </mat-card>
-    <mat-card class="col-7" style="align-items: center;display:block;">
-      <div class="card-header">
+  </div>
+  <div class="row">
+    <mat-card class="col-12" style="align-items: center;display:block;">
+      <div class="header">
         <h3 class="card-title">Found hosts</h3>
       </div>
-      <app-filtro [data]="dataSource" [isTableFilter]="true" class="col-12"></app-filtro>
+      <app-filtro *ngIf="!loading" [data]="dataSource" [isTableFilter]="true" class="col-12"></app-filtro>
       <app-tabla *ngIf="!loading" [data]="dataSource" [displayedColumns]="displayedColumns" [hasPaginator]="true"
         class="col-12">
       </app-tabla>
