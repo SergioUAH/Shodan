@@ -1,4 +1,4 @@
-<div class="form-style col-11" style="margin-bottom: 2em;"  >
+<!-- <div class="form-style col-4" style="margin-bottom: 2em;"  >
   <mat-form-field>
     <mat-chip-list #chipList aria-label="Filter selection">
       <mat-chip *ngFor="let filter of filters" [selectable]="selectable" [removable]="removable"
@@ -18,8 +18,8 @@
       </mat-option>
     </mat-autocomplete>
   </mat-form-field>
-</div>
-  <!-- <div class="row col-md-12 kt-margin-bottom-20-mobile">
+</div> -->
+<!-- <div class="row col-md-12 kt-margin-bottom-20-mobile">
     <mat-form-field class="col-3">
       <mat-select [(value)]="selectedColumn" name="columna" placeholder="Columna">
         <mat-option *ngFor="let column of columnas" [value]="column">
@@ -31,4 +31,8 @@
       <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Buscar">
     </mat-form-field>
   </div> -->
-
+<div class="form-style col-4" style="margin-bottom: 2em;">
+  <mat-form-field>
+      <input placeholder="Filtrar" matInput (keyup)="applyFilter($event)">
+  </mat-form-field>
+</div>

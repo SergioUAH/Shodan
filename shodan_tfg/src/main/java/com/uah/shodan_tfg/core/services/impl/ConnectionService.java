@@ -217,7 +217,7 @@ public class ConnectionService implements IConnectionService {
 		if (file.isDirectory()) {
 		    System.out.println("\\-->" + fileName);
 		    result += "\\-->" + fileName + "\n";
-		    result = generateFTPTree(ftpClient, nextDir, fileName, deep + 1, result);
+		    // result = generateFTPTree(ftpClient, nextDir, fileName, deep + 1, result);
 		} else {
 		    System.out.println(fileName);
 		    result += fileName + "\n";
