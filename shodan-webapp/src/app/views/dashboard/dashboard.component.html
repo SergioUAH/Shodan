@@ -1,43 +1,49 @@
 <!-- Toolbar -->
 
-<div class="toolbar" role="banner" style="background-color: #1e1e29;  ">
+<div class="toolbar" role="banner">
   <img width="40" alt="Angular Logo"
     src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==" />
   <span>Welcome</span>
   <div class="spacer"></div>
 </div>
 
-<div class="content main-body" role="main" style="background-color: #1e1e29; ">
+<div class="row">
   <!-- Highlight Card -->
-  <div class="card highlight-card card-small">
+  <mat-card>
     <span>{{ title }} app is running!</span>
-  </div>
+  </mat-card>
 </div>
 
-<div class="content main-body" role="main" style="justify-content: space-evenly; background-color: #1e1e29;">
-  <div class="card col-4" style="display:block; align-items: center; height: 622px;">
-    <div class="card-header">
-      <h3 class="card-title">Search Query</h3>
-    </div>
-    <app-query-form (searchQuery)="searchDevices($event)" class="col-12">
-    </app-query-form>
-    <div class="card-header" style="margin-top: 30px;">
-      <h3 class="card-title">Last Queries</h3>
-    </div>
-    <app-divisor (searchQuery)="searchDevices($event)" class="col-12"></app-divisor>
+<div role="main">
+  <div class="row" style="justify-content: left;">
+    <mat-card class="col-8" style="display:block; align-items: center;">
+      <div class="header">
+        <h3 class="card-title">Search Query</h3>
+      </div>
+      <app-query-form (searchQuery)="searchDevices($event)" class="col-12">
+      </app-query-form>
+    </mat-card>
+    <mat-card class="col-3" style="align-items: center;display:block;">
+      <div class="header">
+        <h3 class="card-title">Last Queries</h3>
+      </div>
+      <app-divisor (searchQuery)="searchDevices($event)" class="col-12"></app-divisor>
+    </mat-card>
   </div>
-  <div class="card col-7" style="align-items: center;display:block;">
-    <div class="card-header">
-      <h3 class="card-title">Found hosts</h3>
-    </div>
-    <app-filtro [data]="dataSource" [isTableFilter]="true" class="col-12"></app-filtro>
-    <app-tabla *ngIf="!loading" [data]="dataSource" [displayedColumns]="displayedColumns" [hasPaginator]="true" class="col-12">
-    </app-tabla>
+  <div class="row">
+    <mat-card class="col-12" style="align-items: center;display:block;">
+      <div class="header">
+        <h3 class="card-title">Found hosts</h3>
+      </div>
+      <app-filtro *ngIf="!loading" [data]="dataSource" [isTableFilter]="true" class="col-12"></app-filtro>
+      <app-tabla *ngIf="!loading" [data]="dataSource" [displayedColumns]="displayedColumns" [hasPaginator]="true"
+        class="col-12">
+      </app-tabla>
+    </mat-card>
   </div>
 </div>
-
 <!-- Footer -->
-<footer class="footer main-body" style="background-color: #1e1e29;">
+<footer class="footer">
   <!-- Love Angular?&nbsp;
   <a href="https://github.com/angular/angular" target="_blank" rel="noopener"> Give our repo a star.
     <div class="github-star-badge">

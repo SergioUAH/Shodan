@@ -26,6 +26,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatGridListModule } from '@angular/material/grid-list';
 import { DashboardComponent } from './views/dashboard/dashboard.component';
 
 import { ModalComponent } from './views/common/modal/modal.component';
@@ -40,6 +41,7 @@ import { QueryFormComponent } from './views/common/query-form/query-form.compone
 import { ENTER, COMMA, TAB } from '@angular/cdk/keycodes';
 import { DivisorComponent } from './views/common/divisor/divisor.component';
 import { TestSecurityModalComponent } from './views/common/test-security-modal/test-security-modal.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 
 @NgModule({
@@ -77,11 +79,13 @@ import { TestSecurityModalComponent } from './views/common/test-security-modal/t
     MatDividerModule,
     MatListModule,
     MatTooltipModule,
+    MatGridListModule,
     HttpClientModule,
 
     RouterTestingModule,
     ReactiveFormsModule,
     FormsModule,
+    NgbModule,
   ],
   providers: [
     RestService,
