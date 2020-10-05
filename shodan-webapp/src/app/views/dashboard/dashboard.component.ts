@@ -4,6 +4,7 @@ import { RestService } from 'src/app/config/services/rest-service';
 import { QueryFormComponent } from '../common/query-form/query-form.component';
 import { environment } from 'src/environments/environment';
 import { DivisorComponent } from '../common/divisor/divisor.component';
+import { faGithub } from '@fortawesome/free-brands-svg-icons';
 
 export class HostElement {
   id: number;
@@ -64,7 +65,7 @@ const GET_DEVICES_URL = "/target/getAll";
 })
 export class DashboardComponent implements OnInit {
   dataSource: MatTableDataSource<any>;
-
+  faGitHubIcon = faGithub;
   title = 'shodan-webapp';
 
   displayedColumns = ['checked','ip', 'hostname', 'os', 'port', 'country', 'city'];

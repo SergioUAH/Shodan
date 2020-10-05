@@ -83,8 +83,8 @@ export class TablaComponent implements OnInit {
     let devices = id ? [id] : this.selection.selected.map(device => device.id);
     const dialogRef = this.dialog.open(TestSecurityModalComponent,
       {
-        width: "30%",
-        height: "50%",
+        width: "50%",
+        height: "55%",
         data:
         {
           isDetail: true,

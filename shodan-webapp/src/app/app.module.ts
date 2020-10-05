@@ -42,7 +42,7 @@ import { ENTER, COMMA, TAB } from '@angular/cdk/keycodes';
 import { DivisorComponent } from './views/common/divisor/divisor.component';
 import { TestSecurityModalComponent } from './views/common/test-security-modal/test-security-modal.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
   declarations: [
@@ -86,6 +86,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     ReactiveFormsModule,
     FormsModule,
     NgbModule,
+    FontAwesomeModule,
   ],
   providers: [
     RestService,
