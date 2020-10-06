@@ -8,6 +8,7 @@ import java.util.List;
 import com.fooock.shodan.model.banner.Banner;
 import com.uah.shodan_tfg.dataproviders.dao.Host;
 import com.uah.shodan_tfg.entrypoints.dto.FilterQueryDTO;
+import com.uah.shodan_tfg.entrypoints.dto.HackedHostDTO;
 import com.uah.shodan_tfg.entrypoints.dto.HostDTO;
 
 public interface ITargetService {
@@ -29,5 +30,7 @@ public interface ITargetService {
     void testSecurityByIds(List<Integer> ids);
 
     void deleteHosts();
+
+    List<HackedHostDTO> findAllHackedDevices();
 
 }

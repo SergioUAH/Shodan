@@ -35,8 +35,8 @@
           <div class="header">
             <h3 class="card-title">Hacked hosts</h3>
           </div>
-          <app-filtro *ngIf="!loading" [data]="dataSource" [isTableFilter]="true" class="col-12"></app-filtro>
-          <app-tabla *ngIf="!loading" [data]="dataSource" [displayedColumns]="displayedColumns" [hasPaginator]="true"
+          <app-filtro *ngIf="!loadingTab2" [data]="dataSourceTab2" [isTableFilter]="true" class="col-12"></app-filtro>
+          <app-tabla *ngIf="!loadingTab2" [data]="dataSourceTab2" [displayedColumns]="displayedColumnsTab2" [hasPaginator]="true"
             class="col-12">
           </app-tabla>
         </mat-card>
