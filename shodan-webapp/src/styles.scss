@@ -92,5 +92,28 @@ mat-card {
 
 .banner {
   margin: -2.5em -1em !important;
-  background-color: #030344;
+  background-color: #607d8b;
+  // #899a87
 }
+
+.mat-form-field-underline {
+  background-color:#3c3c3c !important;
+}
+
+.mat-form-field-label {
+  color: #3c3c3c !important;
+}
+
+.mat-hint {
+  color: #3c3c3c !important;
+}
+
+.mat-focused .mat-form-field-label {
+  color: #607d8b !important;
+}
+
+.mat-focused .mat-hint {
+  color: #607d8b !important;
+}
+
+

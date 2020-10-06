@@ -27,6 +27,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatGridListModule } from '@angular/material/grid-list';
+import { MatTabsModule } from '@angular/material/tabs';
 import { DashboardComponent } from './views/dashboard/dashboard.component';
 
 import { ModalComponent } from './views/common/modal/modal.component';
@@ -79,6 +80,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     MatDividerModule,
     MatListModule,
     MatTooltipModule,
+    MatTabsModule,
     MatGridListModule,
     HttpClientModule,
 
