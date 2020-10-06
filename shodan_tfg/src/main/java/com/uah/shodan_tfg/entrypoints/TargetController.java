@@ -22,6 +22,7 @@ import com.uah.shodan_tfg.core.converters.HostReportConverter;
 import com.uah.shodan_tfg.core.services.impl.TargetService;
 import com.uah.shodan_tfg.dataproviders.dao.Host;
 import com.uah.shodan_tfg.entrypoints.dto.FilterQueryDTO;
+import com.uah.shodan_tfg.entrypoints.dto.HackedHostDTO;
 import com.uah.shodan_tfg.entrypoints.dto.HostDTO;
 
 import io.reactivex.observers.DisposableObserver;
@@ -101,7 +102,7 @@ public class TargetController {
     }
 
     @GetMapping("/getAll")
-    public ResponseEntity<Object> getDetail(HttpServletRequest request) {
+    public ResponseEntity<Object> getDevices(HttpServletRequest request) {
 	try {
 	    LOGGER.info("Find all saved devices: " + request.getRequestURI());
 	    List<HostDTO> hostsFound = service.findAll();
@@ -118,6 +119,19 @@ public class TargetController {
 	try {
 	    LOGGER.info("Find all saved queries: " + request.getRequestURI());
 	    List<FilterQueryDTO> hostsFound = service.findLastQueries();
+
+	    return new ResponseEntity<>(hostsFound, HttpStatus.OK);
+	} catch (Exception e) {
+	    LOGGER.error(e.getMessage(), e);
+	    return new ResponseEntity<>(2, HttpStatus.OK);
+	}
+    }
+
+    @GetMapping("/getAllHacked")
+    public ResponseEntity<Object> getHackedDevices(HttpServletRequest request) {
+	try {
+	    LOGGER.info("Find all hacked devices: " + request.getRequestURI());
+	    List<HackedHostDTO> hostsFound = service.findAllHackedDevices();
 
 	    return new ResponseEntity<>(hostsFound, HttpStatus.OK);
 	} catch (Exception e) {

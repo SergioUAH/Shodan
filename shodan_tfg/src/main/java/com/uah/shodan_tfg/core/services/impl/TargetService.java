@@ -13,16 +13,20 @@ import org.springframework.stereotype.Service;
 
 import com.fooock.shodan.model.banner.Banner;
 import com.uah.shodan_tfg.core.converters.FilterQueryConverter;
+import com.uah.shodan_tfg.core.converters.HackedHostConverter;
 import com.uah.shodan_tfg.core.converters.HostConverter;
 import com.uah.shodan_tfg.core.converters.HostReportConverter;
 import com.uah.shodan_tfg.core.services.IConnectionService;
 import com.uah.shodan_tfg.core.services.IFileHelper;
 import com.uah.shodan_tfg.core.services.ITargetService;
 import com.uah.shodan_tfg.dataproviders.dao.FilterQuery;
+import com.uah.shodan_tfg.dataproviders.dao.HackedHost;
 import com.uah.shodan_tfg.dataproviders.dao.Host;
 import com.uah.shodan_tfg.dataproviders.repositories.FilterQueryRepository;
+import com.uah.shodan_tfg.dataproviders.repositories.HackedHostRepository;
 import com.uah.shodan_tfg.dataproviders.repositories.HostRepository;
 import com.uah.shodan_tfg.entrypoints.dto.FilterQueryDTO;
+import com.uah.shodan_tfg.entrypoints.dto.HackedHostDTO;
 import com.uah.shodan_tfg.entrypoints.dto.HostDTO;
 
 @Service
@@ -46,10 +50,16 @@ public class TargetService implements ITargetService {
     private HostConverter hostConverter;
 
     @Autowired
+    private HackedHostConverter hackedHostConverter;
+
+    @Autowired
     private HostReportConverter reportConverter;
 
     @Autowired
-    IFileHelper fileService;
+    private IFileHelper fileService;
+
+    @Autowired
+    private HackedHostRepository hackedHostRepository;
 
 //    public FilterQueryDTO create(FilterQueryDTO filterDto) {
 //	FilterQuery filterDao = filterConverter.convert(filterDto);
@@ -205,5 +215,11 @@ public class TargetService implements ITargetService {
     @Override
     public void deleteHosts() {
 	hostRepository.deleteAll();
+    }
+
+    @Override
+    public List<HackedHostDTO> findAllHackedDevices() {
+	List<HackedHost> hackedHosts = hackedHostRepository.findAll();
+	return hackedHostConverter.invert(hackedHosts);
     }
 }
