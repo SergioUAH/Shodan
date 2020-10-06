@@ -9,6 +9,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { environment } from 'src/environments/environment';
 import { TestSecurityModalComponent } from '../test-security-modal/test-security-modal.component';
 
+const REST_URL_DELETE_DEVICES = "/target/deleteHosts";
 @Component({
   selector: 'app-tabla',
   templateUrl: './tabla.component.html',
@@ -79,12 +80,11 @@ export class TablaComponent implements OnInit {
   }
 
   testDevices(id) {
-    console.log('new event');
     let devices = id ? [id] : this.selection.selected.map(device => device.id);
     const dialogRef = this.dialog.open(TestSecurityModalComponent,
       {
-        width: "30%",
-        height: "50%",
+        width: "50%",
+        height: "55%",
         data:
         {
           isDetail: true,
@@ -92,6 +92,28 @@ export class TablaComponent implements OnInit {
         }
       });
     dialogRef.afterClosed();
+  }
+
+  deleteDevices() {
+    this.loading = true;
+    this.http.getCall(environment.url + REST_URL_DELETE_DEVICES)
+    .subscribe(data => {
+      this.responseData = data;
+      console.log(this.responseData);
+      this.dataSource = new MatTableDataSource();
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+      this.loading = false;
+      this.cdr.markForCheck();
+    },
+    error => {
+      console.log("Error", error);
+      this.dataSource = new MatTableDataSource();
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+      this.loading = false;
+      this.cdr.markForCheck();
+    });
   }
 
 }

@@ -1,6 +1,6 @@
 package com.uah.shodan_tfg.dataproviders.dao;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 
@@ -16,10 +16,10 @@ public class BaseEntity {
     @CreationTimestamp
     @JsonIgnore
     @Column(name = "CREATED_ON")
-    private Date createdOn;
+    private LocalDateTime createdOn;
 
     @UpdateTimestamp
     @JsonIgnore
     @Column(name = "UPDATED_ON")
-    private Date updatedOn;
+    private LocalDateTime updatedOn;
 }

@@ -4,26 +4,35 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fooock.shodan.model.banner.Banner;
 import com.uah.shodan_tfg.core.converters.FilterQueryConverter;
+import com.uah.shodan_tfg.core.converters.HackedHostConverter;
 import com.uah.shodan_tfg.core.converters.HostConverter;
 import com.uah.shodan_tfg.core.converters.HostReportConverter;
 import com.uah.shodan_tfg.core.services.IConnectionService;
+import com.uah.shodan_tfg.core.services.IFileHelper;
 import com.uah.shodan_tfg.core.services.ITargetService;
 import com.uah.shodan_tfg.dataproviders.dao.FilterQuery;
+import com.uah.shodan_tfg.dataproviders.dao.HackedHost;
 import com.uah.shodan_tfg.dataproviders.dao.Host;
 import com.uah.shodan_tfg.dataproviders.repositories.FilterQueryRepository;
+import com.uah.shodan_tfg.dataproviders.repositories.HackedHostRepository;
 import com.uah.shodan_tfg.dataproviders.repositories.HostRepository;
 import com.uah.shodan_tfg.entrypoints.dto.FilterQueryDTO;
+import com.uah.shodan_tfg.entrypoints.dto.HackedHostDTO;
 import com.uah.shodan_tfg.entrypoints.dto.HostDTO;
 
 @Service
 public class TargetService implements ITargetService {
+
+    private static Logger LOGGER = Logger.getLogger(TargetService.class);
 
     @Autowired
     private IConnectionService connectionService;
@@ -41,7 +50,16 @@ public class TargetService implements ITargetService {
     private HostConverter hostConverter;
 
     @Autowired
+    private HackedHostConverter hackedHostConverter;
+
+    @Autowired
     private HostReportConverter reportConverter;
+
+    @Autowired
+    private IFileHelper fileService;
+
+    @Autowired
+    private HackedHostRepository hackedHostRepository;
 
 //    public FilterQueryDTO create(FilterQueryDTO filterDto) {
 //	FilterQuery filterDao = filterConverter.convert(filterDto);
@@ -76,25 +94,31 @@ public class TargetService implements ITargetService {
 	Integer port = host.getPort();
 	String ip = host.getIp();
 	Integer id = host.getId();
-	testSecurity(id, ip, port);
+	fileService.writeReport(testSecurity(id, ip, port));
     }
 
-    private void testSecurity(Integer id, String ip, Integer port) {
+    private String testSecurity(Integer id, String ip, Integer port) {
+	String result = "";
 	switch (port) {
 	case 20:
 	case 21:
-	    String resultFTP = connectionService.connectToFtpServer(ip, port);
-	    System.out.println(resultFTP);
+	    result = connectionService.connectToFtpServer(ip, port);
+	    System.out.println(result);
 	    break;
 	case 22:
-	    String resultSSH = connectionService.connectThroughSSH(ip, port);
-	    System.out.println(resultSSH);
+	    result = connectionService.connectThroughSSH(ip, port);
+	    System.out.println(result);
+	    break;
+	case 23:
+	    result = connectionService.connectThroughTelnet(ip, port);
+	    System.out.println(result);
 	    break;
 	case 443:
 	    connectionService.makeHttpRequest(ip, port);
 	default:
 	    break;
 	}
+	return result;
 
 //	try {
 //	    Socket clientSocket = new Socket(ip, port);
@@ -115,7 +139,7 @@ public class TargetService implements ITargetService {
 	    resp = in.readLine();
 	    System.out.println(resp);
 	} catch (IOException e) {
-	    e.printStackTrace();
+	    LOGGER.error(e.getMessage(), e);
 	}
 	return resp;
     }
@@ -178,11 +202,24 @@ public class TargetService implements ITargetService {
     @Override
     public void testSecurityByIds(List<Integer> ids) {
 	List<Host> hosts = hostRepository.findAllById(ids);
+	List<String> reports = new ArrayList<>();
 	for (Host host : hosts) {
 	    Integer port = host.getPort();
 	    String ip = host.getIp();
 	    Integer id = host.getId();
-	    testSecurity(id, ip, port);
+	    reports.add(testSecurity(id, ip, port));
 	}
+	fileService.writeReport(reports);
+    }
+
+    @Override
+    public void deleteHosts() {
+	hostRepository.deleteAll();
+    }
+
+    @Override
+    public List<HackedHostDTO> findAllHackedDevices() {
+	List<HackedHost> hackedHosts = hackedHostRepository.findAll();
+	return hackedHostConverter.invert(hackedHosts);
     }
 }

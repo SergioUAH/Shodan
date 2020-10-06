@@ -38,24 +38,31 @@ export class FiltroComponent implements OnInit {
   constructor(private cdr: ChangeDetectorRef) { }
 
   ngOnInit() {
+    console.log(this.data);
     this.dataConst = this.data;
-    if(this.isTableFilter) {
-      this.options = FILTROS_TABLA;
-      this.stringQuery = "";
-      this.formBuilder = new FormBuilder();
-      //this.createForm();
-      this.filteredOptions = this.myControl.valueChanges.pipe(
-      startWith(null),
-      map((filter: string | null) => filter ? this._filter(filter) : this.options.slice()));
-      // this.initFilter();
-    } else {
-      this.options = FILTROS_SHODAN;
-    }
+    // if(this.isTableFilter) {
+    //   this.options = FILTROS_TABLA;
+    //   this.stringQuery = "";
+    //   this.formBuilder = new FormBuilder();
+    //   //this.createForm();
+    //   this.filteredOptions = this.myControl.valueChanges.pipe(
+    //   startWith(null),
+    //   map((filter: string | null) => filter ? this._filter(filter) : this.options.slice()));
+    //   // this.initFilter();
+    // } else {
+    //   this.options = FILTROS_SHODAN;
+    // }
     this.cdr.markForCheck();
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataConst.filter = filterValue.trim().toLowerCase();
   }
 
   ngAfterViewInit() {
     this.cdr.markForCheck();
+    console.log(this.data);
   }
 
   // private initFilter() {

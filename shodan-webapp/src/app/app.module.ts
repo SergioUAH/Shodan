@@ -26,6 +26,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatTabsModule } from '@angular/material/tabs';
 import { DashboardComponent } from './views/dashboard/dashboard.component';
 
 import { ModalComponent } from './views/common/modal/modal.component';
@@ -42,6 +44,8 @@ import { DivisorComponent } from './views/common/divisor/divisor.component';
 import { TestSecurityModalComponent } from './views/common/test-security-modal/test-security-modal.component';
 import { ImportFilesComponent } from './views/import-files/import-files.component';
 import { NgxFileDropModule } from 'ngx-file-drop';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
   declarations: [
@@ -79,12 +83,16 @@ import { NgxFileDropModule } from 'ngx-file-drop';
     MatDividerModule,
     MatListModule,
     MatTooltipModule,
+    MatTabsModule,
+    MatGridListModule,
     HttpClientModule,
 
     RouterTestingModule,
     ReactiveFormsModule,
     FormsModule,
     NgxFileDropModule,
+    NgbModule,
+    FontAwesomeModule,
   ],
   providers: [
     RestService,

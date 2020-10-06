@@ -8,4 +8,6 @@ public interface IConnectionService {
 
     String connectThroughSSH(String ip, Integer port);
 
+    String connectThroughTelnet(String ip, Integer port);
+
 }

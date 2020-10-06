@@ -1,7 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef, Input, ViewChild, SimpleChanges } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { RestService } from 'src/app/config/services/rest-service';
-import { QueryFormComponent } from '../common/query-form/query-form.component';
 import { environment } from 'src/environments/environment';
 import { DivisorComponent } from '../common/divisor/divisor.component';
 
@@ -56,6 +55,7 @@ export class QueryElement {
 
 const SEARCH_DEVICES_URL = "/target/search";
 const GET_DEVICES_URL = "/target/getAll";
+const GET_HACKED_DEVICES_URL = "/target/getAllHacked";
 
 @Component({
   selector: 'app-dashboard',
@@ -64,22 +64,26 @@ const GET_DEVICES_URL = "/target/getAll";
 })
 export class DashboardComponent implements OnInit {
   dataSource: MatTableDataSource<any>;
-
+  dataSourceTab2: MatTableDataSource<any>;
   title = 'shodan-webapp';
 
   displayedColumns = ['checked','ip', 'hostname', 'os', 'port', 'country', 'city'];
+  displayedColumnsTab2 = ['ip', 'port', 'user', 'password', 'country', 'city'];
 
   queryMap: Map<string,string>;
   responseData: any;
 
   query: QueryElement;
   loading = false;
+  loadingTab2 = false;
 
   @ViewChild(DivisorComponent, {static: true}) divisorComp: DivisorComponent;
+  responseDataTab2: any;
   constructor(public http: RestService, public cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     this.getDevices();
+    this.getHackedDevices()
     this.cdr.detectChanges();
   }
 
@@ -125,6 +129,36 @@ export class DashboardComponent implements OnInit {
         this.loading = false;
         this.cdr.markForCheck();
       });
+  }
+
+  getHackedDevices() {
+    this.loadingTab2 = true;
+    this.http.getCall(environment.url + GET_HACKED_DEVICES_URL)
+      .subscribe(data => {
+        this.responseDataTab2 = data;
+        console.log(this.responseDataTab2);
+        this.dataSourceTab2 = new MatTableDataSource(this.responseDataTab2);
+        this.loadingTab2 = false;
+        this.cdr.markForCheck();
+      },
+      error => {
+        console.log("Error", error);
+        this.dataSourceTab2 = new MatTableDataSource();
+        this.loadingTab2 = false;
+        this.cdr.markForCheck();
+      });
+  }
+  parseResponseDataTab2(resp: any) {
+    resp.forEach(function(part, index) {
+      resp[index] = {
+        ...resp[index],
+        country: resp[index].location.country,
+        city: resp[index].location.city
+      };
+      delete resp[index].location;
+    }, resp);
+
+    return resp;
   }
 
   parseResponseData(resp) {
