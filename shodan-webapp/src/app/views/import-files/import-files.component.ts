@@ -14,7 +14,7 @@ const API_IMPORT_WORDLIST = "/files/importWordlist";
 export class ImportFilesComponent implements OnInit {
 
   wordlist: File = null;
-  placeholder: string = 'Elija un archivo o arrástrelo aquí.';
+  placeholder: string = 'Elija un archivo o arrástrelo aquí.\t';
   fileName: string = '';
   loading = false;
   saveDisabled = true;
