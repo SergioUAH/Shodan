@@ -1,12 +1,20 @@
 package com.uah.shodan_tfg.entrypoints.dto;
 
-import com.uah.shodan_tfg.common.Ports;
+import lombok.Builder;
+import lombok.Data;
 
+@Builder
+@Data
 public class HostDTO {
 
-    private String hostName;
+    private Integer id;
+
     private String ip;
-    private Ports port;
-    private String operatingSystem;
+    private Integer port;
+
+    private String hostname;
+    private String os;
+
+    private LocationDTO location;
 
 }

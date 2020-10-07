@@ -1,0 +1,21 @@
+[
+{IP: 130.206.36.94 | PORT: 21 | USER: anonymous | PASS: anonymous}
+NEC_sharing_traces.zip
+\-->pc_measurement
+	measurement_box_load_test.csv
+	measurement_box_load_transfer_pl.csv
+	measurement_box_service_variability.csv
+	measurement_dropbox_load_test.csv
+	measurement_dropbox_load_transfer_pl.csv
+	measurement_dropbox_service_variability.csv
+	measurement_sugarsync_load_test.csv
+	measurement_sugarsync_load_transfer_pl.csv
+	measurement_sugarsync_service_variability.csv
+\-->s2caio_vm
+	README.txt
+	S2CAIO_Ubuntu_14_04_v20170629.md5
+	S2CAIO_Ubuntu_14_04_v20170629.ova
+\-->ubuntu_vm
+	Ubuntu_Server_16.04.3.ova
+ubuntuone_trace.gz
+]

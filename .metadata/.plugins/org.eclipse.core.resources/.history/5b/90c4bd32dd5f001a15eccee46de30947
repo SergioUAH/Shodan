@@ -1,6 +1,0 @@
-package com.uah.shodan_tfg.common;
-
-public class Location {
-    private String country;
-    private String city;
-}

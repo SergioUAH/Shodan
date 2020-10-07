@@ -1,0 +1,32 @@
+mat-form-field {
+  padding: 0 1rem;
+}
+
+.mat-header-cell, .mat-cell {
+  text-align: center;
+  font-weight: 500;
+  justify-content: center;
+  background-color: #303030;
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.mat-sort-header-container {
+  display: flex;
+  justify-content: center;
+}
+
+/* offsets the header by the same amount of size/padding the sort button occupies */
+.mat-sort-header-container {
+  margin-left: 18px;
+}
+
+.mat-row, .mat-header-row {
+  border-bottom-width: 1px;
+}
+
+.paginator {
+  border-bottom-width: 1px;
+  margin-top: -16px;
+  background-color: #303030;
+  color: rgba(255, 255, 255, 0.7) !important;
+}

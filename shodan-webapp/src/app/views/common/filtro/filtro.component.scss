@@ -1,0 +1,19 @@
+.form-style {
+  text-align: center;
+  font-weight: 500;
+  justify-content: center;
+  display: inline-block;
+  background-color: #a4a4b6;
+  border-radius: 0.2857rem;
+}
+
+mat-form-field {
+  font-size: inherit;
+  font-weight: 500;
+  line-height: 1.125;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  letter-spacing: inherit;
+  margin: 15px;
+  color: rgba(0, 0, 0, 0.7) !important;
+  width: 90%;
+}
