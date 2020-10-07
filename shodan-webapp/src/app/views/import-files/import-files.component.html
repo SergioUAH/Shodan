@@ -1,0 +1,21 @@
+<div class="form-style col-12">
+  <ngx-file-drop dropZoneLabel="Arrastre los archivos aquí" (onFileDrop)="handleFileInput($event)"
+    (onFileOver)="fileOver($event)" (onFileLeave)="fileLeave($event)">
+    <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+      {{ placeholder }} &nbsp;&nbsp;
+      <button type="button" mat-raised-button class="btn btn-secondary kt-margin-20"
+        (click)="openFileSelector()">Examinar archivos</button>
+    </ng-template>
+  </ngx-file-drop>
+
+  <div class="kt-form__actions kt-form__actions--solid mt-4">
+    <div class="row" style="margin-right: 20px; text-align: end;">
+      <div class="col-lg-12">
+        <mat-spinner style="margin:0 auto" [diameter]="20" *ngIf="loading"></mat-spinner>
+        <button type="button" mat-raised-button color="primary" (click)="uploadFile()" [disabled]="saveDisabled">
+          Upload
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -42,6 +42,8 @@ import { QueryFormComponent } from './views/common/query-form/query-form.compone
 import { ENTER, COMMA, TAB } from '@angular/cdk/keycodes';
 import { DivisorComponent } from './views/common/divisor/divisor.component';
 import { TestSecurityModalComponent } from './views/common/test-security-modal/test-security-modal.component';
+import { ImportFilesComponent } from './views/import-files/import-files.component';
+import { NgxFileDropModule } from 'ngx-file-drop';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
@@ -54,7 +56,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     DashboardComponent,
     QueryFormComponent,
     DivisorComponent,
-    TestSecurityModalComponent
+    TestSecurityModalComponent,
+    ImportFilesComponent,
   ],
   imports: [
     BrowserModule,
@@ -87,6 +90,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     RouterTestingModule,
     ReactiveFormsModule,
     FormsModule,
+    NgxFileDropModule,
     NgbModule,
     FontAwesomeModule,
   ],
