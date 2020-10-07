@@ -72,13 +72,12 @@ export class DashboardComponent implements OnInit {
 
   queryMap: Map<string,string>;
   responseData: any;
-
+  responseDataTab2: any;
   query: QueryElement;
   loading = false;
   loadingTab2 = false;
 
   @ViewChild(DivisorComponent, {static: true}) divisorComp: DivisorComponent;
-  responseDataTab2: any;
   constructor(public http: RestService, public cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
@@ -148,6 +147,7 @@ export class DashboardComponent implements OnInit {
         this.cdr.markForCheck();
       });
   }
+
   parseResponseDataTab2(resp: any) {
     resp.forEach(function(part, index) {
       resp[index] = {

@@ -222,4 +222,10 @@ public class TargetService implements ITargetService {
 	List<HackedHost> hackedHosts = hackedHostRepository.findAll();
 	return hackedHostConverter.invert(hackedHosts);
     }
+
+//    @Override
+//    public HackedHostDTO findHackedHostById(Integer id) {
+//	List<HackedHost> hackedHosts = hackedHostRepository.findAll();
+//	return hackedHostConverter.invert(hackedHosts);
+//    }
 }

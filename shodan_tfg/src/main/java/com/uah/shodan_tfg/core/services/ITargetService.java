@@ -33,4 +33,6 @@ public interface ITargetService {
 
     List<HackedHostDTO> findAllHackedDevices();
 
+//    List<HackedHostDTO> findHackedHostById(Integer id);
+
 }

@@ -156,7 +156,7 @@ public class ConnectionService implements IConnectionService {
 			    ftpClient.enterLocalPassiveMode();
 			    String foldersTree = "\n{IP: " + ip + " | PORT: " + port + " | USER: " + username
 				    + " | PASS: " + password + "}\n" + generateFTPTree(ftpClient, "", "/", 0, "");
-			    HackedHost hackedHost = new HackedHost(null, ip, username, password, port, "", "",
+			    HackedHost hackedHost = new HackedHost(null, ip, username, password, port, "ES", "",
 				    foldersTree);
 			    result = foldersTree;
 			    hackedHostRepository.save(hackedHost);
