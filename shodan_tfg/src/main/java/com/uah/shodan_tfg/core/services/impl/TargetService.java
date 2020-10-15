@@ -89,32 +89,33 @@ public class TargetService implements ITargetService {
 	return filterConverter.invert(queries);
     }
 
-    @Override
-    public void testSecurity(HostDTO host) {
-	Integer port = host.getPort();
-	String ip = host.getIp();
-	Integer id = host.getId();
-	fileService.writeReport(testSecurity(id, ip, port));
-    }
+//    @Override
+//    public void testSecurity(HostDTO host) {
+//	Integer port = host.getPort();
+//	String ip = host.getIp();
+//	Integer id = host.getId();
+//	fileService.writeReport(testSecurity(id, ip, port));
+//    }
 
-    private String testSecurity(Integer id, String ip, Integer port) {
+    private String testSecurity(Host host) {
 	String result = "";
+	Integer port = host.getPort();
 	switch (port) {
 	case 20:
 	case 21:
-	    result = connectionService.connectToFtpServer(ip, port);
+	    result = connectionService.connectToFtpServer(host);
 	    System.out.println(result);
 	    break;
 	case 22:
-	    result = connectionService.connectThroughSSH(ip, port);
+	    result = connectionService.connectThroughSSH(host);
 	    System.out.println(result);
 	    break;
 	case 23:
-	    result = connectionService.connectThroughTelnet(ip, port);
+	    result = connectionService.connectThroughTelnet(host);
 	    System.out.println(result);
 	    break;
 	case 443:
-	    connectionService.makeHttpRequest(ip, port);
+	    connectionService.makeHttpRequest(host);
 	default:
 	    break;
 	}
@@ -204,10 +205,7 @@ public class TargetService implements ITargetService {
 	List<Host> hosts = hostRepository.findAllById(ids);
 	List<String> reports = new ArrayList<>();
 	for (Host host : hosts) {
-	    Integer port = host.getPort();
-	    String ip = host.getIp();
-	    Integer id = host.getId();
-	    reports.add(testSecurity(id, ip, port));
+	    reports.add(testSecurity(host));
 	}
 	fileService.writeReport(reports);
     }

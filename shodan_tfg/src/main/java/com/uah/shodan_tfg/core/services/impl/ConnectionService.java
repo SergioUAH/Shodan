@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import com.uah.shodan_tfg.core.services.IConnectionService;
 import com.uah.shodan_tfg.core.services.IFileHelper;
 import com.uah.shodan_tfg.dataproviders.dao.HackedHost;
+import com.uah.shodan_tfg.dataproviders.dao.Host;
 import com.uah.shodan_tfg.dataproviders.repositories.HackedHostRepository;
 import com.uah.shodan_tfg.entrypoints.MessageLoggingController;
 
@@ -55,10 +56,10 @@ public class ConnectionService implements IConnectionService {
     }
 
     @Override
-    public String makeHttpRequest(String ip, Integer port) {
+    public String makeHttpRequest(Host host) {
 	String body = null;
 	HttpClient client = createHttpClient();
-	HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create("http://" + ip + ":" + port))
+	HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create("http://" + host.getIp() + ":" + host.getPort()))
 		.setHeader("User-Agent", "Java 11 HttpClient Bot") // add request header
 		.build();
 	try {
@@ -112,16 +113,18 @@ public class ConnectionService implements IConnectionService {
     }
 
     @Override
-    public String connectToFtpServer(String ip, Integer port) {
+    public String connectToFtpServer(Host host) {
 	String result = "";
 	List<String> userPassList = fileService
 		.fileToList("src/main/resources/wordlists/ftp-betterdefaultpasslist.txt");
 	String username = "";
 	String password = "";
+	String ip = host.getIp();
+	Integer port = host.getPort();
 
 	FTPClient ftpClient = new FTPClient();
 	try {
-	    ftpClient.connect(ip, port);
+		ftpClient.connect(ip, port);
 	    result = ftpClient.getReplyString();
 	    System.out.println("FTP Server connection response --> " + result);
 	    messageController.send("FTP Server connection response --> " + result);
@@ -156,7 +159,7 @@ public class ConnectionService implements IConnectionService {
 			    ftpClient.enterLocalPassiveMode();
 			    String foldersTree = "\n{IP: " + ip + " | PORT: " + port + " | USER: " + username
 				    + " | PASS: " + password + "}\n" + generateFTPTree(ftpClient, "", "/", 0, "");
-			    HackedHost hackedHost = new HackedHost(null, ip, username, password, port, "ES", "",
+			    HackedHost hackedHost = new HackedHost(null, ip, username, password, port, host.getLocation().getCountry(), host.getLocation().getCity(),
 				    foldersTree);
 			    result = foldersTree;
 			    hackedHostRepository.save(hackedHost);
@@ -229,8 +232,9 @@ public class ConnectionService implements IConnectionService {
     }
 
     @Override
-    public String connectThroughSSH(String ip, Integer port) {
+    public String connectThroughSSH(Host host) {
 	String result = "";
+	String ip = host.getIp();
 	List<String> userPassList = fileService
 		.fileToList("src/main/resources/wordlists/ftp-betterdefaultpasslist.txt");
 	String username = "";
@@ -278,7 +282,7 @@ public class ConnectionService implements IConnectionService {
     }
 
     @Override
-    public String connectThroughTelnet(String ip, Integer port) {
+    public String connectThroughTelnet(Host host) {
 	// TODO Auto-generated method stub
 	return null;
     }

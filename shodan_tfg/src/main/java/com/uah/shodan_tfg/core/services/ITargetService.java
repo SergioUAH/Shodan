@@ -19,7 +19,7 @@ public interface ITargetService {
 
     List<FilterQueryDTO> findLastQueries();
 
-    void testSecurity(HostDTO host);
+//    void testSecurity(HostDTO host);
 
     String sendMessage(String msg, BufferedReader in, PrintWriter out);
 
