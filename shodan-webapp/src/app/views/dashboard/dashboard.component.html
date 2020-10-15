@@ -23,7 +23,7 @@
             <h3 class="card-title">Found hosts</h3>
           </div>
           <app-filtro *ngIf="!loading" [data]="dataSource" [isTableFilter]="true" class="col-12"></app-filtro>
-          <app-tabla *ngIf="!loading" [data]="dataSource" [displayedColumns]="displayedColumns" [hasPaginator]="true"
+          <app-tabla *ngIf="!loading" [type]="0" [data]="dataSource" [displayedColumns]="displayedColumns" [hasPaginator]="true"
             class="col-12">
           </app-tabla>
         </mat-card>
@@ -36,13 +36,22 @@
             <h3 class="card-title">Hacked hosts</h3>
           </div>
           <app-filtro *ngIf="!loadingTab2" [data]="dataSourceTab2" [isTableFilter]="true" class="col-12"></app-filtro>
-          <app-tabla *ngIf="!loadingTab2" [data]="dataSourceTab2" [displayedColumns]="displayedColumnsTab2" [hasPaginator]="true"
-            class="col-12">
+          <app-tabla *ngIf="!loadingTab2" [type]="1" [data]="dataSourceTab2" [displayedColumns]="displayedColumnsTab2"
+            [hasPaginator]="true" class="col-12">
           </app-tabla>
         </mat-card>
       </div>
     </mat-tab>
-    <mat-tab label="Import Files"> Content 3 </mat-tab>
+    <mat-tab label="Import Files">
+      <div class="row">
+        <mat-card class="col-12" style="align-items: center;display:block;">
+          <div class="header">
+            <h3 class="card-title">Import wordlist</h3>
+          </div>
+          <app-import-files></app-import-files>
+        </mat-card>
+      </div>
+    </mat-tab>
   </mat-tab-group>
 </div>
 <!--

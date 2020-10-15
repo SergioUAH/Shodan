@@ -1,13 +1,15 @@
 package com.uah.shodan_tfg.core.services;
 
+import com.uah.shodan_tfg.dataproviders.dao.Host;
+
 public interface IConnectionService {
 
-    String makeHttpRequest(String ip, Integer port);
+    String makeHttpRequest(Host host);
 
-    String connectToFtpServer(String ip, Integer port);
+    String connectToFtpServer(Host host);
 
-    String connectThroughSSH(String ip, Integer port);
+    String connectThroughSSH(Host host);
 
-    String connectThroughTelnet(String ip, Integer port);
+    String connectThroughTelnet(Host host);
 
 }

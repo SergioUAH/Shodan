@@ -19,7 +19,7 @@ public interface ITargetService {
 
     List<FilterQueryDTO> findLastQueries();
 
-    void testSecurity(HostDTO host);
+//    void testSecurity(HostDTO host);
 
     String sendMessage(String msg, BufferedReader in, PrintWriter out);
 
@@ -32,5 +32,7 @@ public interface ITargetService {
     void deleteHosts();
 
     List<HackedHostDTO> findAllHackedDevices();
+
+//    List<HackedHostDTO> findHackedHostById(Integer id);
 
 }
