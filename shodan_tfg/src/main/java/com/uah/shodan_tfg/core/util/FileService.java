@@ -5,6 +5,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.jboss.logging.Logger;
 import org.springframework.stereotype.Service;
@@ -16,6 +25,50 @@ public class FileService implements IFileService {
 	private static Logger LOGGER = Logger.getLogger(FileService.class);
 
 	@Override
+	public List<String> fileToList(String pathToFile) {
+		List<String> wordlist = new ArrayList<>();
+		try {
+			wordlist = Files.readAllLines(Paths.get(pathToFile),
+					StandardCharsets.ISO_8859_1);
+		} catch (IOException e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+		return wordlist;
+	}
+
+	@Override
+	public void writeReport(List<String> reports) {
+		try {
+			Files.writeString(
+					Path.of("reports",
+							"Report_"
+									+ LocalDateTime.now()
+											.format(DateTimeFormatter.ofPattern(
+													"yyyyMMdd_HHmmss"))
+									+ ".txt"),
+					reports.toString());
+		} catch (IOException e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public void writeReport(String report) {
+		try {
+			Files.writeString(
+					Path.of("reports",
+							"Report_"
+									+ LocalDateTime.now()
+											.format(DateTimeFormatter.ofPattern(
+													"yyyyMMdd_HHmmss"))
+									+ ".txt"),
+					report);
+		} catch (IOException e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+	}
+
+	@Override
 	public void saveFile(MultipartFile file) {
 		InputStream inputStream = null;
 		OutputStream outputStream = null;
@@ -25,9 +78,8 @@ public class FileService implements IFileService {
 				+ "wordlists");
 		if (!dir.exists())
 			dir.mkdirs();
-		File destination = new File(
-				dir.getAbsolutePath() + File.separator
-						+ file.getOriginalFilename());
+		File destination = new File(dir.getAbsolutePath() + File.separator
+				+ file.getOriginalFilename());
 		try {
 			if (!destination.exists()) {
 				destination.createNewFile();
@@ -47,4 +99,39 @@ public class FileService implements IFileService {
 		}
 	}
 
+	@Override
+	public List<String> findAllWordlists() {
+		List<String> fileList = new ArrayList<>();
+		String dir = System.getProperty("user.dir") + File.separator + "src"
+				+ File.separator + "main" + File.separator + "resources"
+				+ File.separator + "wordlists";
+		try (DirectoryStream<Path> stream = Files
+				.newDirectoryStream(Paths.get(dir))) {
+			for (Path path : stream) {
+				if (!Files.isDirectory(path)) {
+					fileList.add(path.getFileName().toString());
+				}
+			}
+		} catch (IOException e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+		return fileList;
+	}
+
+	@Override
+	public List<String> createWordlist(List<String> wordlists) {
+		List<String> userPassList = new ArrayList<>();
+		List<String> userWordlist = fileToList(
+				"src/main/resources/wordlists/" + wordlists.get(0));
+		List<String> passWordlist = fileToList(
+				"src/main/resources/wordlists/" + wordlists.get(1));
+
+		for (String user : userWordlist) {
+			for (String pass : passWordlist) {
+				userPassList.add(user + ":" + pass);
+			}
+		}
+		return userPassList;
+
+	}
 }

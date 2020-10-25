@@ -21,9 +21,7 @@ export class TablaComponent implements OnInit {
   @Input() hasPaginator: true | false;
   @Input() data: MatTableDataSource<any>;
   @Input() type: number;
-
-  // @Output() reloadTable: EventEmitter<any> = new EventEmitter<any>();
-
+  @Input() wordlists: string[];
 
   dataSource;
   responseData;
@@ -84,6 +82,7 @@ export class TablaComponent implements OnInit {
   }
 
   testDevices(id) {
+    console.log(this.wordlists);
     let devices = id ? [id] : this.selection.selected.map(device => device.id);
     const dialogRef = this.dialog.open(TestSecurityModalComponent,
       {
@@ -93,11 +92,11 @@ export class TablaComponent implements OnInit {
         {
           isDetail: true,
           content: devices,
+          wordlists: this.wordlists,
         }
       });
     dialogRef.afterClosed().subscribe(result => {
-      // console.log("Mandar reload");
-      // this.reloadTable.emit();
+
     });
   }
 
