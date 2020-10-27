@@ -1,6 +1,6 @@
 <div class="row" style="margin-top: 2em !important;">
   <!-- Highlight Card -->
-  <mat-tab-group class="col-12">
+  <mat-tab-group (selectedTabChange)="loadTabData($event)" class="col-12">
     <mat-tab label="Home">
       <div class="row" style="justify-content: left;">
         <mat-card class="col-8" style="display:block; align-items: center;">
@@ -22,8 +22,8 @@
           <div class="header">
             <h3 class="card-title">Found hosts</h3>
           </div>
-          <app-filtro *ngIf="!loading" [data]="dataSource" [isTableFilter]="true" class="col-12"></app-filtro>
-          <app-tabla *ngIf="!loading" [type]="0" [data]="dataSource" [displayedColumns]="displayedColumns" [hasPaginator]="true"
+          <app-filtro *ngIf="!loading" (updateWordlists)="updateWordlists($event)" [wordlists]="wordlists" [data]="dataSource" [isTableFilter]="true" class="col-12"></app-filtro>
+          <app-tabla *ngIf="!loading" (reloadTable)="getHackedDevices()" [wordlists]="selectedWordlists" [type]="0" [data]="dataSource" [displayedColumns]="displayedColumns" [hasPaginator]="true"
             class="col-12">
           </app-tabla>
         </mat-card>
@@ -35,7 +35,7 @@
           <div class="header">
             <h3 class="card-title">Hacked hosts</h3>
           </div>
-          <app-filtro *ngIf="!loadingTab2" [data]="dataSourceTab2" [isTableFilter]="true" class="col-12"></app-filtro>
+          <app-filtro *ngIf="!loadingTab2" [data]="dataSourceTab2" [isTableFilter]="false" class="col-12"></app-filtro>
           <app-tabla *ngIf="!loadingTab2" [type]="1" [data]="dataSourceTab2" [displayedColumns]="displayedColumnsTab2"
             [hasPaginator]="true" class="col-12">
           </app-tabla>
