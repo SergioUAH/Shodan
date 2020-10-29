@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.List;
+import java.util.concurrent.Future;
 
 import com.fooock.shodan.model.banner.Banner;
 import com.uah.shodan_tfg.dataproviders.dao.Host;
@@ -14,28 +15,33 @@ import com.uah.shodan_tfg.entrypoints.dto.TestDevicesDTO;
 
 public interface ITargetService {
 
-    List<HostDTO> create(FilterQueryDTO query, List<Banner> banners);
+	List<HostDTO> create(FilterQueryDTO query, List<Banner> banners);
 
-    List<HostDTO> findAll();
+	List<HostDTO> findAll();
 
-    List<FilterQueryDTO> findLastQueries();
+	List<FilterQueryDTO> findLastQueries();
 
-//    void testSecurity(HostDTO host);
+	// void testSecurity(HostDTO host);
 
-    String sendMessage(String msg, BufferedReader in, PrintWriter out);
+	String sendMessage(String msg, BufferedReader in, PrintWriter out);
 
-    void stopConnection(BufferedReader in, PrintWriter out, Socket clientSocket);
+	void stopConnection(BufferedReader in, PrintWriter out,
+			Socket clientSocket);
 
-    Host findById(Integer id);
+	Host findById(Integer id);
 
 	// void testSecurityByIds(List<Integer> ids);
 
-    void deleteHosts();
+	void deleteHosts();
 
-    List<HackedHostDTO> findAllHackedDevices();
+	List<HackedHostDTO> findAllHackedDevices();
 
-	void testSecurityByIds(TestDevicesDTO dto);
+	String testSecurityByIds(TestDevicesDTO dto);
 
-//    List<HackedHostDTO> findHackedHostById(Integer id);
+	void stopTest();
+
+	Future<String> getReportsTask();
+
+	// List<HackedHostDTO> findHackedHostById(Integer id);
 
 }

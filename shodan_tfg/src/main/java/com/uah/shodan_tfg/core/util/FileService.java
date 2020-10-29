@@ -39,14 +39,15 @@ public class FileService implements IFileService {
 	@Override
 	public void writeReport(List<String> reports) {
 		try {
-			Files.writeString(
-					Path.of("reports",
-							"Report_"
-									+ LocalDateTime.now()
-											.format(DateTimeFormatter.ofPattern(
-													"yyyyMMdd_HHmmss"))
-									+ ".txt"),
-					reports.toString());
+			if (!reports.isEmpty()) {
+				Files.writeString(Path.of("reports",
+						"Report_"
+								+ LocalDateTime.now()
+										.format(DateTimeFormatter
+												.ofPattern("yyyyMMdd_HHmmss"))
+								+ ".txt"),
+						reports.toString());
+			}
 		} catch (IOException e) {
 			LOGGER.error(e.getMessage(), e);
 		}
@@ -55,14 +56,16 @@ public class FileService implements IFileService {
 	@Override
 	public void writeReport(String report) {
 		try {
-			Files.writeString(
-					Path.of("reports",
-							"Report_"
-									+ LocalDateTime.now()
-											.format(DateTimeFormatter.ofPattern(
-													"yyyyMMdd_HHmmss"))
-									+ ".txt"),
-					report);
+			if (!report.isBlank()) {
+				Files.writeString(Path.of("reports",
+						"Report_"
+								+ LocalDateTime.now()
+										.format(DateTimeFormatter
+												.ofPattern("yyyyMMdd_HHmmss"))
+								+ ".txt"),
+						report);
+			}
+
 		} catch (IOException e) {
 			LOGGER.error(e.getMessage(), e);
 		}

@@ -17,9 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fooock.shodan.ShodanRestApi;
+import com.fooock.shodan.model.banner.Banner;
 import com.fooock.shodan.model.host.HostReport;
-import com.uah.shodan_tfg.core.converters.HostReportConverter;
-import com.uah.shodan_tfg.core.services.impl.TargetService;
+import com.uah.shodan_tfg.core.converters.Converter;
+import com.uah.shodan_tfg.core.services.ITargetService;
 import com.uah.shodan_tfg.dataproviders.dao.Host;
 import com.uah.shodan_tfg.entrypoints.dto.FilterQueryDTO;
 import com.uah.shodan_tfg.entrypoints.dto.HackedHostDTO;
@@ -42,10 +43,10 @@ public class TargetController {
 	MessageLoggingController webSocketLogging;
 
 	@Autowired
-	TargetService service;
+	ITargetService service;
 
 	@Autowired
-	HostReportConverter reportConverter;
+	Converter<Banner, Host> reportConverter;
 
 	@PostMapping("/search")
 	public ResponseEntity<Object> searchQuery(@RequestBody FilterQueryDTO query,
@@ -157,6 +158,25 @@ public class TargetController {
 			LOGGER.error(e.getMessage(), e);
 			return new ResponseEntity<>(2, HttpStatus.OK);
 		}
+	}
+
+	// @GetMapping("/stopTest")
+	// public ResponseEntity<Object> stopTest(HttpServletRequest request) {
+	// try {
+	// LOGGER.info("Stop credentials testing: " + request.getRequestURI());
+	// service.stopTest();
+	//
+	// return new ResponseEntity<>(1, HttpStatus.OK);
+	// } catch (Exception e) {
+	// LOGGER.error(e.getMessage(), e);
+	// return new ResponseEntity<>(2, HttpStatus.OK);
+	// }
+	// }
+
+	@GetMapping("/stopTest")
+	public ResponseEntity<String> cancel(HttpServletRequest request) {
+		service.stopTest();
+		return new ResponseEntity<String>("Stopped", HttpStatus.OK);
 	}
 
 }
