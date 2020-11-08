@@ -12,7 +12,8 @@ public interface IConnectionService {
 	Future<String> connectToFtpServer(Host host, List<String> wordlists)
 			throws InterruptedException;
 
-	String connectThroughSSH(Host host, List<String> wordlists);
+	Future<String> connectThroughSSH(Host host, List<String> wordlists)
+			throws InterruptedException;
 
 	String connectThroughTelnet(Host host, List<String> wordlists);
 

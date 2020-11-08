@@ -1,0 +1,10 @@
+admin
+anonymous
+root
+user
+administrator
+1234
+ftp
+User
+guest
+Admin

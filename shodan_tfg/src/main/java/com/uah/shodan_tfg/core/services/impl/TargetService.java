@@ -115,20 +115,28 @@ public class TargetService implements ITargetService {
 					reportsTask = connectionService.connectToFtpServer(host,
 							wordlists);
 					result = reportsTask.get();
-					System.out.println(result);
+					LOGGER.info(result);
 					break;
 				} catch (InterruptedException | ExecutionException e) {
+					LOGGER.error(e.getMessage(), e);
+					throw new InterruptedException();
+				}
+			case 22 :
+				try {
+					reportsTask = connectionService.connectThroughSSH(host,
+							wordlists);
+					result = reportsTask.get();
+					LOGGER.info(result);
+					break;
+				} catch (InterruptedException | ExecutionException e) {
+					LOGGER.error(e.getMessage(), e);
 					throw new InterruptedException();
 				}
 
-			case 22 :
-				result = connectionService.connectThroughSSH(host, wordlists);
-				System.out.println(result);
-				break;
 			case 23 :
 				result = connectionService.connectThroughTelnet(host,
 						wordlists);
-				System.out.println(result);
+				LOGGER.info(result);
 				break;
 			case 443 :
 				connectionService.makeHttpRequest(host);
@@ -137,17 +145,6 @@ public class TargetService implements ITargetService {
 		}
 		return result;
 
-		// try {
-		// Socket clientSocket = new Socket(ip, port);
-		// PrintWriter out = new PrintWriter(clientSocket.getOutputStream(),
-		// true);
-		// BufferedReader in = new BufferedReader(new
-		// InputStreamReader(clientSocket.getInputStream()));
-		// sendMessage("Test 1", in, out);
-		// stopConnection(in, out, clientSocket);
-		// } catch (IOException e) {
-		// e.printStackTrace();
-		// }
 	}
 
 	@Override
@@ -171,7 +168,7 @@ public class TargetService implements ITargetService {
 			out.close();
 			clientSocket.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage(), e);
 		}
 	}
 
@@ -207,7 +204,7 @@ public class TargetService implements ITargetService {
 	// e2.printStackTrace();
 	// } catch (ProtocolException e) {
 	// // TODO Auto-generated catch block
-	// e.printStackTrace();
+	// LOGGER.error(e.getMessage(), e);
 	// } catch (IOException e1) {
 	// // TODO Auto-generated catch block
 	// e1.printStackTrace();

@@ -26,11 +26,11 @@ public class MessageLoggingController {
 	@SendTo("/topic/connectionLog")
 	public LogOutput receiveMessage(@Payload LogMessageDTO message)
 			throws Exception {
-		LOGGER.info("Petición recibida " + message.getText());
+		LOGGER.info("Received request " + message.getText());
 		String time = "["
 				+ new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date())
 				+ "]";
-		message.setText("Probando logs");
+		message.setText("Socket connected");
 		LOGGER.info(message.getText());
 		return new LogOutput(message.getText(), time);
 	}
@@ -42,7 +42,7 @@ public class MessageLoggingController {
 				+ "]";
 		message.setText(time + "  >>>  " + text);
 		LOGGER.info(message.getText());
-		LOGGER.info("Enviando mensaje --> " + message.getText());
+		LOGGER.info("Sending message --> " + message.getText());
 		this.template.convertAndSend("/topic/connectionLog", message);
 	}
 

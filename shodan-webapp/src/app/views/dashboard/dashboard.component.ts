@@ -78,7 +78,6 @@ export class DashboardComponent implements OnInit {
   query: QueryElement;
   loading = true;
   loadingTab2 = true;
-
   wordlists: string[];
   selectedWordlists: string[];
 
@@ -195,6 +194,7 @@ export class DashboardComponent implements OnInit {
   loadTabData(tabEvent) {
     switch (tabEvent.index) {
       case 0:
+        this.getWordlists();
         this.getDevices();
         break;
       case 1:

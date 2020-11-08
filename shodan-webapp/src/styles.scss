@@ -50,7 +50,12 @@ $shodan-light-theme: mat-light-theme(
 }
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
+html, body {
+  height: 100%;
+  box-sizing: border-box;
+  margin: 0;
+}
+
 body { font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .row {
@@ -91,7 +96,7 @@ mat-card {
 }
 
 .banner {
-  margin: -2.5em -1em !important;
+  // margin: -2.5em -1em !important;
   background-color: #607d8b;
   // #899a87
 }

@@ -1,4 +1,5 @@
-<div class="row" style="margin-top: 2em !important;">
+
+<div class="row" style="height: 100%;">
   <!-- Highlight Card -->
   <mat-tab-group (selectedTabChange)="loadTabData($event)" class="col-12">
     <mat-tab label="Home">
@@ -54,33 +55,3 @@
     </mat-tab>
   </mat-tab-group>
 </div>
-<!--
-<div role="main">
-  <div class="row" style="justify-content: left;">
-    <mat-card class="col-8" style="display:block; align-items: center;">
-      <div class="header">
-        <h3 class="card-title">Search Query</h3>
-      </div>
-      <app-query-form (searchQuery)="searchDevices($event)" class="col-12">
-      </app-query-form>
-    </mat-card>
-    <mat-card class="col-3" style="align-items: center;display:block;">
-      <div class="header">
-        <h3 class="card-title">Last Queries</h3>
-      </div>
-      <app-divisor (searchQuery)="searchDevices($event)" class="col-12"></app-divisor>
-    </mat-card>
-  </div>
-  <div class="row">
-    <mat-card class="col-12" style="align-items: center;display:block;">
-      <div class="header">
-        <h3 class="card-title">Found hosts</h3>
-      </div>
-      <app-filtro *ngIf="!loading" [data]="dataSource" [isTableFilter]="true" class="col-12"></app-filtro>
-      <app-tabla *ngIf="!loading" [data]="dataSource" [displayedColumns]="displayedColumns" [hasPaginator]="true"
-        class="col-12">
-      </app-tabla>
-    </mat-card>
-  </div>
-</div>
- -->
