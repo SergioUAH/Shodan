@@ -94,14 +94,14 @@ export class TestSecurityModalComponent implements OnInit, AfterViewInit {
   connectWebSocket() {
     const OLD_THIS = this;
     this.webSocket.openConnection(function (stompEvent) {
-      console.log("MENSAJE RECIBIDO --> " + stompEvent);
+      console.log("MESSAGE RECIEVED --> " + stompEvent);
       OLD_THIS.listenEvent(stompEvent);
     });
   }
 
   async testSecurity(devices) {
     await this.delay(1000);
-    this.webSocket.sendMessage("HOLAAAAAAAAAAAAAAAA");
+    this.webSocket.sendMessage("Connecting socket");
     const dto = {
       ids: devices,
       wordlists: this.wordlists

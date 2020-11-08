@@ -6,6 +6,9 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +37,8 @@ import com.uah.shodan_tfg.entrypoints.dto.TestDevicesDTO;
 public class TargetService implements ITargetService {
 
 	private static Logger LOGGER = Logger.getLogger(TargetService.class);
+
+	private Future<String> reportsTask;
 
 	@Autowired
 	private IConnectionService connectionService;
@@ -99,23 +104,39 @@ public class TargetService implements ITargetService {
 	// fileService.writeReport(testSecurity(id, ip, port));
 	// }
 
-	private String testSecurity(Host host, List<String> wordlists) {
+	private String testSecurity(Host host, List<String> wordlists)
+			throws InterruptedException {
 		String result = "";
 		Integer port = host.getPort();
 		switch (port) {
 			case 20 :
 			case 21 :
-				result = connectionService.connectToFtpServer(host, wordlists);
-				System.out.println(result);
-				break;
+				try {
+					reportsTask = connectionService.connectToFtpServer(host,
+							wordlists);
+					result = reportsTask.get();
+					LOGGER.info(result);
+					break;
+				} catch (InterruptedException | ExecutionException e) {
+					LOGGER.error(e.getMessage(), e);
+					throw new InterruptedException();
+				}
 			case 22 :
-				result = connectionService.connectThroughSSH(host, wordlists);
-				System.out.println(result);
-				break;
+				try {
+					reportsTask = connectionService.connectThroughSSH(host,
+							wordlists);
+					result = reportsTask.get();
+					LOGGER.info(result);
+					break;
+				} catch (InterruptedException | ExecutionException e) {
+					LOGGER.error(e.getMessage(), e);
+					throw new InterruptedException();
+				}
+
 			case 23 :
 				result = connectionService.connectThroughTelnet(host,
 						wordlists);
-				System.out.println(result);
+				LOGGER.info(result);
 				break;
 			case 443 :
 				connectionService.makeHttpRequest(host);
@@ -124,17 +145,6 @@ public class TargetService implements ITargetService {
 		}
 		return result;
 
-		// try {
-		// Socket clientSocket = new Socket(ip, port);
-		// PrintWriter out = new PrintWriter(clientSocket.getOutputStream(),
-		// true);
-		// BufferedReader in = new BufferedReader(new
-		// InputStreamReader(clientSocket.getInputStream()));
-		// sendMessage("Test 1", in, out);
-		// stopConnection(in, out, clientSocket);
-		// } catch (IOException e) {
-		// e.printStackTrace();
-		// }
 	}
 
 	@Override
@@ -158,7 +168,7 @@ public class TargetService implements ITargetService {
 			out.close();
 			clientSocket.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage(), e);
 		}
 	}
 
@@ -194,7 +204,7 @@ public class TargetService implements ITargetService {
 	// e2.printStackTrace();
 	// } catch (ProtocolException e) {
 	// // TODO Auto-generated catch block
-	// e.printStackTrace();
+	// LOGGER.error(e.getMessage(), e);
 	// } catch (IOException e1) {
 	// // TODO Auto-generated catch block
 	// e1.printStackTrace();
@@ -209,13 +219,24 @@ public class TargetService implements ITargetService {
 	}
 
 	@Override
-	public void testSecurityByIds(TestDevicesDTO dto) {
+	public String testSecurityByIds(TestDevicesDTO dto) {
+		String response = "";
 		List<Host> hosts = hostRepository.findAllById(dto.getIds());
 		List<String> reports = new ArrayList<>();
-		for (Host host : hosts) {
-			reports.add(testSecurity(host, dto.getWordlists()));
+		Integer i = 0;
+		for (i = 0; i < hosts.size(); i++) {
+			try {
+				String result = testSecurity(hosts.get(i), dto.getWordlists());
+				reports.add(result);
+			} catch (InterruptedException | CancellationException e) {
+				LOGGER.info("Test security thread has been interrupted");
+				fileService.writeReport(reports);
+				return response;
+			}
+
 		}
 		fileService.writeReport(reports);
+		return response;
 	}
 
 	@Override
@@ -229,6 +250,15 @@ public class TargetService implements ITargetService {
 		return hackedHostConverter.invert(hackedHosts);
 	}
 
+	@Override
+	public void stopTest() {
+		reportsTask.cancel(true);
+	}
+
+	@Override
+	public Future<String> getReportsTask() {
+		return reportsTask;
+	}
 	// @Override
 	// public HackedHostDTO findHackedHostById(Integer id) {
 	// List<HackedHost> hackedHosts = hackedHostRepository.findAll();

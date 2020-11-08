@@ -10,6 +10,7 @@ import { environment } from 'src/environments/environment';
 import { TestSecurityModalComponent } from '../test-security-modal/test-security-modal.component';
 
 const REST_URL_DELETE_DEVICES = "/target/deleteHosts";
+const REST_URL_STOP_TEST = "/target/stopTest";
 @Component({
   selector: 'app-tabla',
   templateUrl: './tabla.component.html',
@@ -96,7 +97,7 @@ export class TablaComponent implements OnInit {
         }
       });
     dialogRef.afterClosed().subscribe(result => {
-
+      this.stopTest();
     });
   }
 
@@ -122,4 +123,14 @@ export class TablaComponent implements OnInit {
         });
   }
 
+  stopTest() {
+    this.http.getCall(environment.url + REST_URL_STOP_TEST)
+      .subscribe(data => {
+        this.responseData = data;
+        console.log(this.responseData);
+      },
+        error => {
+          console.log("Error", error);
+        });
+  }
 }

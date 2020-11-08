@@ -39,14 +39,15 @@ public class FileService implements IFileService {
 	@Override
 	public void writeReport(List<String> reports) {
 		try {
-			Files.writeString(
-					Path.of("reports",
-							"Report_"
-									+ LocalDateTime.now()
-											.format(DateTimeFormatter.ofPattern(
-													"yyyyMMdd_HHmmss"))
-									+ ".txt"),
-					reports.toString());
+			if (!reports.isEmpty()) {
+				Files.writeString(Path.of("reports",
+						"Report_"
+								+ LocalDateTime.now()
+										.format(DateTimeFormatter
+												.ofPattern("yyyyMMdd_HHmmss"))
+								+ ".txt"),
+						reports.toString());
+			}
 		} catch (IOException e) {
 			LOGGER.error(e.getMessage(), e);
 		}
@@ -55,14 +56,16 @@ public class FileService implements IFileService {
 	@Override
 	public void writeReport(String report) {
 		try {
-			Files.writeString(
-					Path.of("reports",
-							"Report_"
-									+ LocalDateTime.now()
-											.format(DateTimeFormatter.ofPattern(
-													"yyyyMMdd_HHmmss"))
-									+ ".txt"),
-					report);
+			if (!report.isBlank()) {
+				Files.writeString(Path.of("reports",
+						"Report_"
+								+ LocalDateTime.now()
+										.format(DateTimeFormatter
+												.ofPattern("yyyyMMdd_HHmmss"))
+								+ ".txt"),
+						report);
+			}
+
 		} catch (IOException e) {
 			LOGGER.error(e.getMessage(), e);
 		}
@@ -73,9 +76,7 @@ public class FileService implements IFileService {
 		InputStream inputStream = null;
 		OutputStream outputStream = null;
 		String rootPath = System.getProperty("user.dir");
-		File dir = new File(rootPath + File.separator + "src" + File.separator
-				+ "main" + File.separator + "resources" + File.separator
-				+ "wordlists");
+		File dir = new File(rootPath + File.separator + "wordlists");
 		if (!dir.exists())
 			dir.mkdirs();
 		File destination = new File(dir.getAbsolutePath() + File.separator
@@ -102,9 +103,8 @@ public class FileService implements IFileService {
 	@Override
 	public List<String> findAllWordlists() {
 		List<String> fileList = new ArrayList<>();
-		String dir = System.getProperty("user.dir") + File.separator + "src"
-				+ File.separator + "main" + File.separator + "resources"
-				+ File.separator + "wordlists";
+		String dir = System.getProperty("user.dir") + File.separator
+				+ "wordlists";
 		try (DirectoryStream<Path> stream = Files
 				.newDirectoryStream(Paths.get(dir))) {
 			for (Path path : stream) {
@@ -121,10 +121,8 @@ public class FileService implements IFileService {
 	@Override
 	public List<String> createWordlist(List<String> wordlists) {
 		List<String> userPassList = new ArrayList<>();
-		List<String> userWordlist = fileToList(
-				"src/main/resources/wordlists/" + wordlists.get(0));
-		List<String> passWordlist = fileToList(
-				"src/main/resources/wordlists/" + wordlists.get(1));
+		List<String> userWordlist = fileToList("wordlists/" + wordlists.get(0));
+		List<String> passWordlist = fileToList("wordlists/" + wordlists.get(1));
 
 		for (String user : userWordlist) {
 			for (String pass : passWordlist) {

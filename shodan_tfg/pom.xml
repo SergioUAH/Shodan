@@ -13,11 +13,11 @@
 	<artifactId>shodan_tfg</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>shodan_tfg</name>
+	<packaging>war</packaging>
 	<description>Trabajo de fin de grado realizado por Sergio Salvador Salgado</description>
 
 	<properties>
 		<java.version>11</java.version>
-		<packaging>jar</packaging>
 	</properties>
 
 	<dependencies>
