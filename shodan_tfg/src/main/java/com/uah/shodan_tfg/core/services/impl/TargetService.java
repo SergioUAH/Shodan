@@ -132,16 +132,19 @@ public class TargetService implements ITargetService {
 					LOGGER.error(e.getMessage(), e);
 					throw new InterruptedException();
 				}
-
-			case 23 :
-				result = connectionService.connectThroughTelnet(host,
-						wordlists);
-				LOGGER.info(result);
-				break;
+			case 80 :
 			case 443 :
-				connectionService.makeHttpRequest(host);
 			default :
-				break;
+				try {
+					reportsTask = connectionService.webAuthLogin(host,
+							wordlists);
+					result = reportsTask.get();
+					LOGGER.info(result);
+					break;
+				} catch (InterruptedException | ExecutionException e) {
+					LOGGER.error(e.getMessage(), e);
+					throw new InterruptedException();
+				}
 		}
 		return result;
 
