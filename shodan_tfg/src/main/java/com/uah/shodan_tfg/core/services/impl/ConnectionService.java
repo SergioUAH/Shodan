@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlButton;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput;
@@ -134,19 +135,14 @@ public class ConnectionService implements IConnectionService {
 							return new AsyncResult<String>(finalResult);
 						}
 
-						// page = webClient.getPage(
-						// protocol + host.getIp() + ":" + host.getPort());
-						page = webClient
-								.getPage("https://newserv.freewha.com/");
+						page = webClient.getPage(
+								protocol + host.getIp() + ":" + host.getPort());
 
 						final HtmlForm form = page.getForms().get(0);
 
-						final HtmlSubmitInput button = (HtmlSubmitInput) form
-								.getByXPath("//*[contains(@type, 'submit')]")
-								.get(0);
 						final HtmlTextInput userField = (HtmlTextInput) form
 								.getByXPath(
-										"//input[contains(@name, 'user') or contains(@name, 'username') or contains(@name, 'userName') or contains(@name, 'login')]")
+										"//input[contains(@name, 'user') or contains(@name, 'username') or contains(@name, 'userName') or contains(@name, 'login') or contains(@ng-model, 'user')]")
 								.get(0);
 						final HtmlPasswordInput passField = (HtmlPasswordInput) form
 								.getByXPath(
@@ -161,9 +157,24 @@ public class ConnectionService implements IConnectionService {
 						userField.type(user);
 						passField.type(pass);
 
+						final HtmlSubmitInput button;
+						final HtmlButton backupButton;
+						HtmlPage page2;
+						try {
+							button = (HtmlSubmitInput) form
+									.getByXPath(
+											"//*[contains(@type, 'submit')]")
+									.get(0);
+							page2 = button.click();
+						} catch (Exception ex) {
+							backupButton = (HtmlButton) form.getByXPath(
+									"//button[contains(@type, 'submit') or contains(@id, 'submit')]")
+									.get(0);
+							page2 = backupButton.click();
+						}
 						// Now submit the form by clicking the button and get
 						// back the second page.
-						final HtmlPage page2 = button.click();
+
 						// Get new form, if exists
 						if (page2.getForms().isEmpty() || page2.getForms()
 								.get(0)
@@ -200,6 +211,12 @@ public class ConnectionService implements IConnectionService {
 				}
 			} catch (FailingHttpStatusCodeException | IOException e) {
 				LOGGER.error(e.getMessage(), e);
+			} catch (Exception e) {
+				LOGGER.error(e.getMessage(), e);
+				messageController.send("Login attempts for IP " + ip
+						+ " failed: webpage is not a login site");
+				running.set(false);
+				return new AsyncResult<String>(finalResult);
 			}
 		}
 		System.out.println(
