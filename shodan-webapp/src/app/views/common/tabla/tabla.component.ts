@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ChangeDetectorRef, EventEmitter, Output } from '@angular/core';
 import { MatDialogModule, MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { ModalComponent } from '../modal/modal.component';
 import { RestService } from '../../../config/services/rest-service';
@@ -10,6 +10,7 @@ import { environment } from 'src/environments/environment';
 import { TestSecurityModalComponent } from '../test-security-modal/test-security-modal.component';
 
 const REST_URL_DELETE_DEVICES = "/target/deleteHosts";
+const REST_URL_STOP_TEST = "/target/stopTest";
 @Component({
   selector: 'app-tabla',
   templateUrl: './tabla.component.html',
@@ -20,14 +21,16 @@ export class TablaComponent implements OnInit {
   @Input() displayedColumns: string[];
   @Input() hasPaginator: true | false;
   @Input() data: MatTableDataSource<any>;
+  @Input() type: number;
+  @Input() wordlists: string[];
 
   dataSource;
   responseData;
   loading = true;
   selection = new SelectionModel<any>(true, []);
 
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
-  @ViewChild(MatSort, {static: true}) sort: MatSort;
+  @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
   constructor(public dialog: MatDialog, private cdr: ChangeDetectorRef, public http: RestService) { }
 
   ngOnInit() {
@@ -41,21 +44,21 @@ export class TablaComponent implements OnInit {
   }
 
   showDetail(row) {
-    const dialogRef = this.dialog.open(ModalComponent,
-      {
-        width: "30%",
-        height: "50%",
-        data:
+      const dialogRef = this.dialog.open(ModalComponent,
         {
-          isDetail: true,
-          content: row,
+          width: "30%",
+          height: this.type == 0 ? "50%" : '35%',
+          data:
+          {
+            type: this.type,
+            content: row,
+          }
+        });
+      dialogRef.afterClosed().subscribe(result => {
+        if (this.type == 0 && result ) {
+          this.testDevices(result);
         }
       });
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.testDevices(result);
-      }
-    });
   }
 
   /** Whether the number of selected elements matches the total number of rows. */
@@ -68,8 +71,8 @@ export class TablaComponent implements OnInit {
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle() {
     this.isAllSelected() ?
-        this.selection.clear() :
-        this.dataSource.data.forEach(row => this.selection.select(row));
+      this.selection.clear() :
+      this.dataSource.data.forEach(row => this.selection.select(row));
   }
 
   checkboxLabel(row?: any): string {
@@ -80,40 +83,54 @@ export class TablaComponent implements OnInit {
   }
 
   testDevices(id) {
+    console.log(this.wordlists);
     let devices = id ? [id] : this.selection.selected.map(device => device.id);
     const dialogRef = this.dialog.open(TestSecurityModalComponent,
       {
-        width: "30%",
-        height: "50%",
+        width: "50%",
+        height: "55%",
         data:
         {
           isDetail: true,
           content: devices,
+          wordlists: this.wordlists,
         }
       });
-    dialogRef.afterClosed();
+    dialogRef.afterClosed().subscribe(result => {
+      this.stopTest();
+    });
   }
 
   deleteDevices() {
     this.loading = true;
     this.http.getCall(environment.url + REST_URL_DELETE_DEVICES)
-    .subscribe(data => {
-      this.responseData = data;
-      console.log(this.responseData);
-      this.dataSource = new MatTableDataSource();
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-      this.loading = false;
-      this.cdr.markForCheck();
-    },
-    error => {
-      console.log("Error", error);
-      this.dataSource = new MatTableDataSource();
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-      this.loading = false;
-      this.cdr.markForCheck();
-    });
+      .subscribe(data => {
+        this.responseData = data;
+        console.log(this.responseData);
+        this.dataSource = new MatTableDataSource();
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+        this.loading = false;
+        this.cdr.markForCheck();
+      },
+        error => {
+          console.log("Error", error);
+          this.dataSource = new MatTableDataSource();
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
+          this.loading = false;
+          this.cdr.markForCheck();
+        });
   }
 
+  stopTest() {
+    this.http.getCall(environment.url + REST_URL_STOP_TEST)
+      .subscribe(data => {
+        this.responseData = data;
+        console.log(this.responseData);
+      },
+        error => {
+          console.log("Error", error);
+        });
+  }
 }

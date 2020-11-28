@@ -19,4 +19,11 @@ export class RestService {
   postCall(URL: string, dto: object): Observable<HttpResponse<object>> {
     return this.http.post<HttpResponse<object>>(URL, dto, {});
   }
+
+  postToImportFile(URL: string, file: File): Observable<HttpResponse<object>> {
+    const formData: FormData = new FormData();
+    formData.append('file', file, file.name);
+    return this.http.post<HttpResponse<object>>(URL, formData, {});
+  }
+
 }

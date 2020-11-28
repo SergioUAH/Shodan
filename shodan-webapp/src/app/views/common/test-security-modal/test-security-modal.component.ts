@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, ChangeDetectorRef, AfterViewInit, resolveForwardRef } from '@angular/core';
+import { Component, OnInit, Inject, ChangeDetectorRef, AfterViewInit, resolveForwardRef, ElementRef, ViewChild } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ModalComponent } from '../modal/modal.component';
 import { FormBuilder } from '@angular/forms';
@@ -29,13 +29,16 @@ export class TestSecurityModalComponent implements OnInit, AfterViewInit {
   endPointWS: string = '/logging';
 
   client: Client;
+  wordlists: string[];
 
+  @ViewChild('logger') logger: ElementRef;
   constructor(public dialogRef: MatDialogRef<TestSecurityModalComponent>, @Inject(MAT_DIALOG_DATA) public data: any,
     private formBuilder: FormBuilder, private http: RestService, private webSocket: WebSocketService, private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     this.loading = true;
     this.devices = this.data.content;
+    this.wordlists = this.data.wordlists;
     this.connectWebSocket();
     this.testSecurity(this.devices);
   }
@@ -47,6 +50,7 @@ export class TestSecurityModalComponent implements OnInit, AfterViewInit {
   listenEvent(stompEvent) {
     let body = JSON.parse(stompEvent.body)
     this.textarea = this.textarea == undefined ? `\n${body.text}\n` : this.textarea + `\n${body.text}\n`;
+    this.logger.nativeElement.scrollTop = this.logger.nativeElement.scrollHeight;
     //this.textarea = `\n${body.timeStamp} --> ${body.text}\n`;
   }
 
@@ -90,15 +94,19 @@ export class TestSecurityModalComponent implements OnInit, AfterViewInit {
   connectWebSocket() {
     const OLD_THIS = this;
     this.webSocket.openConnection(function (stompEvent) {
-      console.log("MENSAJE RECIBIDO --> " + stompEvent);
+      console.log("MESSAGE RECIEVED --> " + stompEvent);
       OLD_THIS.listenEvent(stompEvent);
     });
   }
 
   async testSecurity(devices) {
     await this.delay(1000);
-    this.webSocket.sendMessage("HOLAAAAAAAAAAAAAAAA");
-    this.http.postCall(environment.url + REST_URL, devices)
+    this.webSocket.sendMessage("Connecting socket");
+    const dto = {
+      ids: devices,
+      wordlists: this.wordlists
+    }
+    this.http.postCall(environment.url + REST_URL, dto)
       .subscribe(data => {
         this.responseData = data;
         console.log(this.responseData);

@@ -2,18 +2,13 @@
   <!-- Checkbox Column -->
   <ng-container matColumnDef="checked">
     <mat-header-cell *matHeaderCellDef>
-      <mat-checkbox (change)="$event ? masterToggle() : null"
-                    [checked]="selection.hasValue() && isAllSelected()"
-                    [indeterminate]="selection.hasValue() && !isAllSelected()"
-                    [aria-label]="checkboxLabel()"
-                    [color]="'primary'">
+      <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()"
+        [indeterminate]="selection.hasValue() && !isAllSelected()" [aria-label]="checkboxLabel()" [color]="'primary'">
       </mat-checkbox>
     </mat-header-cell>
     <mat-cell *matCellDef="let element" (click)="$event.stopPropagation()">
-      <mat-checkbox (change)="$event ? selection.toggle(element ) : null"
-                    [checked]="selection.isSelected(element)"
-                    [aria-label]="checkboxLabel(element)"
-                    [color]="'primary'">
+      <mat-checkbox (change)="$event ? selection.toggle(element ) : null" [checked]="selection.isSelected(element)"
+        [aria-label]="checkboxLabel(element)" [color]="'primary'">
       </mat-checkbox>
     </mat-cell>
   </ng-container>
@@ -27,7 +22,8 @@
   <!-- Fecha Column -->
   <ng-container matColumnDef="hostname">
     <mat-header-cell *matHeaderCellDef mat-sort-header> Hostname </mat-header-cell>
-    <mat-cell *matCellDef="let element" [matTooltip]="element.hostname"> {{ element.hostname.length > 15 ? element.hostname.substring(0,16) : element.hostname }} </mat-cell>
+    <mat-cell *matCellDef="let element" [matTooltip]="element.hostname">
+      {{ element.hostname.length > 15 ? element.hostname.substring(0,16) : element.hostname }} </mat-cell>
   </ng-container>
 
   <!-- Fecha Column -->
@@ -53,13 +49,34 @@
     <mat-cell *matCellDef="let element"> {{ element.city }} </mat-cell>
   </ng-container>
 
+
+  <!-- Hacked Hosts Table -->
+  <!-- Usuario Column -->
+  <ng-container matColumnDef="user">
+    <mat-header-cell *matHeaderCellDef mat-sort-header> User </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{ element.user }} </mat-cell>
+  </ng-container>
+
+  <!-- Pass Column -->
+  <ng-container matColumnDef="password">
+    <mat-header-cell *matHeaderCellDef mat-sort-header> Password </mat-header-cell>
+    <mat-cell *matCellDef="let element"> {{ element.password }} </mat-cell>
+  </ng-container>
+
+  <!-- FoldersTree Column -->
+  <ng-container matColumnDef="foldersTree">
+    <mat-header-cell *matHeaderCellDef mat-sort-header> Folder Tree </mat-header-cell>
+    <mat-cell *matCellDef="let element" [matTooltip]="element.hostname">
+      {{ element.foldersTree.length > 15 ? element.foldersTree.substring(0,16) : element.foldersTree }} </mat-cell>
+  </ng-container>
+
   <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
   <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="showDetail(row)"></mat-row>
 </mat-table>
 
-<mat-paginator class="paginator" [hidden]="!hasPaginator" [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+<mat-paginator class="paginator" [hidden]="!hasPaginator" [pageSizeOptions]="[5]"></mat-paginator>
 
-<section class="row" style="margin: 2%; justify-content: flex-end;">
+<section *ngIf="type == 0" class="row" style="margin: 2%; justify-content: flex-end;">
   <button mat-raised-button color="primary" style="margin-right: 1em;" (click)="deleteDevices()">Clean</button>
-  <button mat-raised-button color="primary" (click)="testDevices(undefined)">Test security!</button>
+  <button mat-raised-button color="primary" (click)="testDevices(undefined)">Test security</button>
 </section>

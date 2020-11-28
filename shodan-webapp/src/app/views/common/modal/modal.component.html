@@ -18,8 +18,8 @@
       </mat-list>
     </mat-card-content>
     <mat-card-actions>
-      <button mat-button (click)="testSecurity()">Test Device</button>
-      <button mat-button (click)="goToURL()">Go to address</button>
+      <button *ngIf="type == 0" mat-button (click)="testSecurity()">Test Device</button>
+      <button *ngIf="type == 0" mat-button (click)="goToURL()">Go to address</button>
       <button mat-button (click)="onClose()">Back</button>
     </mat-card-actions>
   </mat-card>

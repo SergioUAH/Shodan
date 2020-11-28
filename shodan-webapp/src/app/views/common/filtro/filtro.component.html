@@ -1,34 +1,19 @@
-<div class="form-style col-11" style="margin-bottom: 2em;"  >
-  <mat-form-field>
-    <mat-chip-list #chipList aria-label="Filter selection">
-      <mat-chip *ngFor="let filter of filters" [selectable]="selectable" [removable]="removable"
-        (removed)="remove(filter)">
-        {{filter}}
-        <mat-icon matChipRemove [hidden]="!removable">cancel</mat-icon>
-      </mat-chip>
-      <input placeholder="Ex. country:ES..." #searchQuery #filterInput [formControl]="myControl" [matAutocomplete]="auto"
-        [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-        (matChipInputTokenEnd)="add($event)">
-    </mat-chip-list>
-    <mat-hint *ngIf="!isTableFilter" align="start"><strong>Type in your search query</strong> </mat-hint>
-    <mat-hint *ngIf="!isTableFilter" align="end">{{searchQuery.value.length}} / 256</mat-hint>
-    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
-      <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
-        {{option}}
-      </mat-option>
-    </mat-autocomplete>
+<div class="form-style" [ngClass]="isTableFilter ? 'col-11' : 'col-4'" style="margin-bottom: 2em;">
+  <mat-form-field [ngClass]="isTableFilter ? 'col-5' : ''">
+    <input placeholder="Filter" matInput (keyup)="applyFilter($event)">
+  </mat-form-field>
+  <mat-form-field *ngIf="isTableFilter" class="col-3">
+    <mat-label>Select user wordlist</mat-label>
+    <mat-select [(value)]="userWordlist" (selectionChange)="updateWordlistEvent()">
+      <mat-option *ngFor="let wordlist of wordlists; let index = i" [value]="wordlist">
+        {{wordlist}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field *ngIf="isTableFilter" class="col-3">
+    <mat-label>Select password wordlist</mat-label>
+    <mat-select [(value)]="passWordlist" (selectionChange)="updateWordlistEvent()">
+      <mat-option *ngFor="let wordlist of wordlists; let index = i" [value]="wordlist">
+        {{wordlist}}</mat-option>
+    </mat-select>
   </mat-form-field>
 </div>
-  <!-- <div class="row col-md-12 kt-margin-bottom-20-mobile">
-    <mat-form-field class="col-3">
-      <mat-select [(value)]="selectedColumn" name="columna" placeholder="Columna">
-        <mat-option *ngFor="let column of columnas" [value]="column">
-          {{getValue(column)}}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-    <mat-form-field class="col-8">
-      <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Buscar">
-    </mat-form-field>
-  </div> -->
-

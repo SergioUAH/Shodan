@@ -1,7 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef, Input, ViewChild, SimpleChanges } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { RestService } from 'src/app/config/services/rest-service';
-import { QueryFormComponent } from '../common/query-form/query-form.component';
 import { environment } from 'src/environments/environment';
 import { DivisorComponent } from '../common/divisor/divisor.component';
 
@@ -56,6 +55,9 @@ export class QueryElement {
 
 const SEARCH_DEVICES_URL = "/target/search";
 const GET_DEVICES_URL = "/target/getAll";
+const GET_HACKED_DEVICES_URL = "/target/getAllHacked";
+
+const GET_WORDLISTS_URL = "/files/getWordlists";
 
 @Component({
   selector: 'app-dashboard',
@@ -64,21 +66,26 @@ const GET_DEVICES_URL = "/target/getAll";
 })
 export class DashboardComponent implements OnInit {
   dataSource: MatTableDataSource<any>;
-
+  dataSourceTab2: MatTableDataSource<any>;
   title = 'shodan-webapp';
 
-  displayedColumns = ['checked','ip', 'hostname', 'os', 'port', 'country', 'city'];
+  displayedColumns = ['checked', 'ip', 'hostname', 'os', 'port', 'country', 'city'];
+  displayedColumnsTab2 = ['ip', 'port', 'user', 'password', 'country', 'city'];
 
-  queryMap: Map<string,string>;
+  queryMap: Map<string, string>;
   responseData: any;
-
+  responseDataTab2: any;
   query: QueryElement;
-  loading = false;
+  loading = true;
+  loadingTab2 = true;
+  wordlists: string[];
+  selectedWordlists: string[];
 
-  @ViewChild(DivisorComponent, {static: true}) divisorComp: DivisorComponent;
+  @ViewChild(DivisorComponent, { static: true }) divisorComp: DivisorComponent;
   constructor(public http: RestService, public cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
+    this.getWordlists();
     this.getDevices();
     this.cdr.detectChanges();
   }
@@ -100,12 +107,12 @@ export class DashboardComponent implements OnInit {
         this.divisorComp.getQueries();
         this.cdr.markForCheck();
       },
-      error => {
-        console.log("Error", error);
-        this.dataSource = new MatTableDataSource();
-        this.loading = false;
-        this.cdr.markForCheck();
-      });
+        error => {
+          console.log("Error", error);
+          this.dataSource = new MatTableDataSource();
+          this.loading = false;
+          this.cdr.markForCheck();
+        });
   }
 
   getDevices() {
@@ -113,22 +120,53 @@ export class DashboardComponent implements OnInit {
     this.http.getCall(environment.url + GET_DEVICES_URL)
       .subscribe(data => {
         this.responseData = data;
-        console.log(this.responseData);
         this.parseResponseData(this.responseData);
         this.dataSource = new MatTableDataSource(this.responseData);
         this.loading = false;
         this.cdr.markForCheck();
       },
-      error => {
-        console.log("Error", error);
-        this.dataSource = new MatTableDataSource();
-        this.loading = false;
-        this.cdr.markForCheck();
-      });
+        error => {
+          console.log("Error", error);
+          this.dataSource = new MatTableDataSource();
+          this.loading = false;
+          this.cdr.markForCheck();
+        });
   }
 
-  parseResponseData(resp) {
-    resp.forEach(function(part, index) {
+  getHackedDevices() {
+    console.log("Recargar hacked hosts");
+    this.loadingTab2 = true;
+    this.http.getCall(environment.url + GET_HACKED_DEVICES_URL)
+      .subscribe(data => {
+        this.responseDataTab2 = data;
+        this.dataSourceTab2 = new MatTableDataSource(this.responseDataTab2);
+        this.loadingTab2 = false;
+        this.cdr.markForCheck();
+      },
+        error => {
+          console.log("Error", error);
+          this.dataSourceTab2 = new MatTableDataSource();
+          this.loadingTab2 = false;
+          this.cdr.markForCheck();
+        });
+  }
+
+  getWordlists() {
+    this.loading = true;
+    this.http.getCall(environment.url + GET_WORDLISTS_URL)
+      .subscribe(data => {
+        this.responseData = data;
+        this.wordlists = this.responseData;
+        this.selectedWordlists = [this.wordlists[0], this.wordlists[0]];
+      },
+        error => {
+          console.log("Error", error);
+          this.wordlists = [];
+        });
+  }
+
+  parseResponseDataTab2(resp: any) {
+    resp.forEach(function (part, index) {
       resp[index] = {
         ...resp[index],
         country: resp[index].location.country,
@@ -138,6 +176,38 @@ export class DashboardComponent implements OnInit {
     }, resp);
 
     return resp;
+  }
+
+  parseResponseData(resp) {
+    resp.forEach(function (part, index) {
+      resp[index] = {
+        ...resp[index],
+        country: resp[index].location.country,
+        city: resp[index].location.city
+      };
+      delete resp[index].location;
+    }, resp);
+
+    return resp;
+  }
+
+  loadTabData(tabEvent) {
+    switch (tabEvent.index) {
+      case 0:
+        this.getWordlists();
+        this.getDevices();
+        break;
+      case 1:
+        this.getHackedDevices();
+        break;
+      default:
+        break;
+    }
+  }
+
+  updateWordlists(wordlists) {
+    this.selectedWordlists = wordlists;
+    this.cdr.markForCheck();
   }
 
 }

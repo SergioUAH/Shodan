@@ -1,13 +1,9 @@
-<mat-dialog-content class="mat-typography mat-dialog-content dialog">
-  <mat-card class="example-card">
-    <mat-card-header>
-      <mat-card-title>System Details</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <textarea [(ngModel)]="textarea" style="width: 440px; height:270px; resize: none;"></textarea>
-    </mat-card-content>
-    <mat-card-actions>
-      <button mat-button (click)="onClose()">Back</button>
-    </mat-card-actions>
-  </mat-card>
+<mat-dialog-content class="mat-typography dialog">
+  <h3 mat-dialog-title>System Details</h3>
+  <div>
+    <textarea #logger class="col-12" [(ngModel)]="textarea" rows="20" cols="40" style="resize: none;"></textarea>
+  </div>
 </mat-dialog-content>
+<div mat-dialog-actions>
+  <button mat-button (click)="onClose()">Back</button>
+</div>
