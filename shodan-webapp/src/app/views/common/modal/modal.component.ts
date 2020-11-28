@@ -77,7 +77,11 @@ export class ModalComponent implements OnInit {
   }
 
   goToURL() {
-    window.open(`http://${this.responseData.ip}:${this.responseData.port}`, '_blank');
+    if(this.responseData.port == 443) {
+      window.open(`https://${this.responseData.ip}:${this.responseData.port}`, '_blank');
+    } else {
+      window.open(`http://${this.responseData.ip}:${this.responseData.port}`, '_blank');
+    }
   }
 
 }

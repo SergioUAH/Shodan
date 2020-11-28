@@ -17,4 +17,7 @@ public interface IConnectionService {
 
 	String connectThroughTelnet(Host host, List<String> wordlists);
 
+	Future<String> webAuthLogin(Host host, List<String> wordlists)
+			throws InterruptedException;
+
 }
