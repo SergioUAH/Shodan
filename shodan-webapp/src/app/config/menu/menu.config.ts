@@ -9,12 +9,6 @@ export class MenuConfig {
           alignment: 'left',
           page: '/dashboard',
           translate: 'MENU.DASHBOARD'
-        // }, {
-        //   title: 'Entrada de Eventos',
-        //   root: true,
-        //   alignment: 'left',
-        //   page: '/events',
-        //   translate: 'MENU.EVENTS'
         },
       ]
     }

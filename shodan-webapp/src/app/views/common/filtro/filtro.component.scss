@@ -17,3 +17,8 @@ mat-form-field {
   color: rgba(0, 0, 0, 0.7) !important;
   width: 90%;
 }
+
+.mat-option.mat-selected:not(.mat-option-disabled) {
+  color: #98b6e4;
+}
+

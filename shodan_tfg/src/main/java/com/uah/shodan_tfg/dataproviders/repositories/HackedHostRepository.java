@@ -6,6 +6,10 @@ import org.springframework.stereotype.Repository;
 import com.uah.shodan_tfg.dataproviders.dao.HackedHost;
 
 @Repository
-public interface HackedHostRepository extends JpaRepository<HackedHost, Integer> {
+public interface HackedHostRepository
+		extends
+			JpaRepository<HackedHost, Integer> {
+
+	HackedHost findByIpAndPort(String ip, Integer port);
 
 }

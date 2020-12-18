@@ -10,6 +10,7 @@ import { environment } from 'src/environments/environment';
 import { TestSecurityModalComponent } from '../test-security-modal/test-security-modal.component';
 
 const REST_URL_DELETE_DEVICES = "/target/deleteHosts";
+const REST_URL_STOP_TEST = "/target/stopTest";
 @Component({
   selector: 'app-tabla',
   templateUrl: './tabla.component.html',
@@ -21,9 +22,7 @@ export class TablaComponent implements OnInit {
   @Input() hasPaginator: true | false;
   @Input() data: MatTableDataSource<any>;
   @Input() type: number;
-
-  // @Output() reloadTable: EventEmitter<any> = new EventEmitter<any>();
-
+  @Input() wordlists: string[];
 
   dataSource;
   responseData;
@@ -84,6 +83,7 @@ export class TablaComponent implements OnInit {
   }
 
   testDevices(id) {
+    console.log(this.wordlists);
     let devices = id ? [id] : this.selection.selected.map(device => device.id);
     const dialogRef = this.dialog.open(TestSecurityModalComponent,
       {
@@ -93,11 +93,11 @@ export class TablaComponent implements OnInit {
         {
           isDetail: true,
           content: devices,
+          wordlists: this.wordlists,
         }
       });
     dialogRef.afterClosed().subscribe(result => {
-      // console.log("Mandar reload");
-      // this.reloadTable.emit();
+      this.stopTest();
     });
   }
 
@@ -123,4 +123,14 @@ export class TablaComponent implements OnInit {
         });
   }
 
+  stopTest() {
+    this.http.getCall(environment.url + REST_URL_STOP_TEST)
+      .subscribe(data => {
+        this.responseData = data;
+        console.log(this.responseData);
+      },
+        error => {
+          console.log("Error", error);
+        });
+  }
 }

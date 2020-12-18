@@ -50,16 +50,21 @@ $shodan-light-theme: mat-light-theme(
 }
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
+html, body {
+  height: 100%;
+  box-sizing: border-box;
+  margin: 0;
+}
+
 body { font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .row {
   margin: 1em 1em !important;
 }
 
-mat-card {
-  margin: 0.5em;
-}
+// mat-card {
+//   margin: 0.5em;
+// }
 
 .header {
   margin: 0 1.25rem 0 1.25rem;
@@ -91,7 +96,7 @@ mat-card {
 }
 
 .banner {
-  margin: -2.5em -1em !important;
+  // margin: -2.5em -1em !important;
   background-color: #607d8b;
   // #899a87
 }
@@ -114,6 +119,10 @@ mat-card {
 
 .mat-focused .mat-hint {
   color: #607d8b !important;
+}
+
+.mat-select-value {
+  color: #3c3c3c;
 }
 
 

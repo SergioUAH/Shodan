@@ -1,4 +1,4 @@
-<div class="form-style col-11">
+<div class="form-style col-12">
   <form>
     <mat-form-field>
       <mat-chip-list #chipList aria-label="Filter selection">
@@ -19,6 +19,10 @@
         </mat-option>
       </mat-autocomplete>
     </mat-form-field>
-    <button mat-raised-button color="primary" (click)="searchDevices()">Search</button>
   </form>
 </div>
+<section class="row" style="margin: 1em 0em !important; justify-content: flex-end;">
+  <button mat-raised-button color="primary" (click)="searchDevices()">Search</button>
+</section>
+
+

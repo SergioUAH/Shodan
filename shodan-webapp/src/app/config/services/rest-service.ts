@@ -22,7 +22,7 @@ export class RestService {
 
   postToImportFile(URL: string, file: File): Observable<HttpResponse<object>> {
     const formData: FormData = new FormData();
-    formData.append('files', file, file.name);
+    formData.append('file', file, file.name);
     return this.http.post<HttpResponse<object>>(URL, formData, {});
   }
 
