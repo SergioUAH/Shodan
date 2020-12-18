@@ -36,7 +36,8 @@ public class FileLoaderController {
 			return new ResponseEntity<>(1, HttpStatus.OK);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
-			return new ResponseEntity<>(2, HttpStatus.OK);
+			return new ResponseEntity<>(e.getMessage(),
+					HttpStatus.EXPECTATION_FAILED);
 		}
 	}
 
@@ -49,7 +50,8 @@ public class FileLoaderController {
 			return new ResponseEntity<>(wordlistsFound, HttpStatus.OK);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
-			return new ResponseEntity<>(2, HttpStatus.OK);
+			return new ResponseEntity<>(e.getMessage(),
+					HttpStatus.EXPECTATION_FAILED);
 		}
 	}
 }

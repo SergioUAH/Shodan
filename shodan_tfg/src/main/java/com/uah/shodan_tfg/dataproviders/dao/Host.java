@@ -2,6 +2,7 @@ package com.uah.shodan_tfg.dataproviders.dao;
 
 import java.io.Serializable;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -20,70 +21,70 @@ import lombok.EqualsAndHashCode;
 @Data
 @Entity(name = "HOST")
 @EqualsAndHashCode(callSuper = false)
-public class Host extends BaseEntity implements Serializable{
+public class Host extends BaseEntity implements Serializable {
 
-    private static final long serialVersionUID = -8623547867322595087L;
+	private static final long serialVersionUID = -8623547867322595087L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    
-    @ManyToOne
-    @JoinColumn(name = "filterQueryId", nullable = false)
-    @JsonIgnore
-    private FilterQuery filterQuery;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id;
 
-    @OneToOne
-    @MapsId
-    @JsonIgnore
-    private Location location;
+	@ManyToOne
+	@JoinColumn(name = "filterQueryId", nullable = false)
+	@JsonIgnore
+	private FilterQuery filterQuery;
 
-    @Column(name = "hostname")
-    private String hostname;
+	@OneToOne(cascade = CascadeType.REMOVE)
+	@MapsId
+	@JsonIgnore
+	private Location location;
 
-    @Column(name = "asn")
-    private String asn;
+	@Column(name = "hostname")
+	private String hostname;
 
-//    TODO Guarda todo el HTML de la página, no es manejable.
-//    @Column(name = "data", length = 9999)
-//    private String data;
+	@Column(name = "asn")
+	private String asn;
 
-    @Column(name = "ip")
-    private String ip;
+	// TODO Guarda todo el HTML de la página, no es manejable.
+	// @Column(name = "data", length = 9999)
+	// private String data;
 
-    @Column(name = "port")
-    private Integer port;
+	@Column(name = "ip")
+	private String ip;
 
-    @Column(name = "os")
-    private String operatingSystem;
+	@Column(name = "port")
+	private Integer port;
 
-    @Column(name = "title")
-    private String title;
+	@Column(name = "os")
+	private String operatingSystem;
 
-    @Column(name = "product")
-    private String product;
+	@Column(name = "title")
+	private String title;
 
-    @Column(name = "version")
-    private String version;
+	@Column(name = "product")
+	private String product;
 
-    @Column(name = "isp")
-    private String isp;
+	@Column(name = "version")
+	private String version;
 
-    @Column(name = "transport")
-    private String transport;
+	@Column(name = "isp")
+	private String isp;
 
-    // Optional properties
+	@Column(name = "transport")
+	private String transport;
 
-    @Column(name = "uptime")
-    private Integer uptime;
+	// Optional properties
 
-    @Column(name = "domain")
-    private String domain;
+	@Column(name = "uptime")
+	private Integer uptime;
 
-    @Column(name = "isSslEnabled")
-    private Boolean isSslEnabled;
+	@Column(name = "domain")
+	private String domain;
 
-    @Column(name = "deviceType")
-    private String deviceType;
+	@Column(name = "isSslEnabled")
+	private Boolean isSslEnabled;
+
+	@Column(name = "deviceType")
+	private String deviceType;
 
 }
