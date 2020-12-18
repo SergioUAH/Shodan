@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>com.uah</groupId>
 	<artifactId>shodan_tfg</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.1.0</version>
 	<name>shodan_tfg</name>
 	<packaging>war</packaging>
 	<description>Trabajo de fin de grado realizado por Sergio Salvador Salgado</description>
