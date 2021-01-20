@@ -16,5 +16,4 @@ public interface IFileService {
 
 	List<String> findAllWordlists();
 
-	List<String> createWordlist(List<String> wordlists);
 }

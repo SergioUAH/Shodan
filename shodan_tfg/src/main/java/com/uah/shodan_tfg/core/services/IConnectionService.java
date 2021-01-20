@@ -7,15 +7,11 @@ import com.uah.shodan_tfg.dataproviders.dao.Host;
 
 public interface IConnectionService {
 
-	String makeHttpRequest(Host host);
-
 	Future<String> connectToFtpServer(Host host, List<String> wordlists)
 			throws InterruptedException;
 
 	Future<String> connectThroughSSH(Host host, List<String> wordlists)
 			throws InterruptedException;
-
-	String connectThroughTelnet(Host host, List<String> wordlists);
 
 	Future<String> webAuthLogin(Host host, List<String> wordlists)
 			throws InterruptedException;

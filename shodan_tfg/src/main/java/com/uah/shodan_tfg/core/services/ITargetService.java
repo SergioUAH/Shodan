@@ -1,8 +1,5 @@
 package com.uah.shodan_tfg.core.services;
 
-import java.io.BufferedReader;
-import java.io.PrintWriter;
-import java.net.Socket;
 import java.util.List;
 import java.util.concurrent.Future;
 
@@ -21,16 +18,7 @@ public interface ITargetService {
 
 	List<FilterQueryDTO> findLastQueries();
 
-	// void testSecurity(HostDTO host);
-
-	String sendMessage(String msg, BufferedReader in, PrintWriter out);
-
-	void stopConnection(BufferedReader in, PrintWriter out,
-			Socket clientSocket);
-
 	Host findById(Integer id);
-
-	// void testSecurityByIds(List<Integer> ids);
 
 	void deleteHosts();
 
@@ -41,7 +29,5 @@ public interface ITargetService {
 	void stopTest();
 
 	Future<String> getReportsTask();
-
-	// List<HackedHostDTO> findHackedHostById(Integer id);
 
 }
