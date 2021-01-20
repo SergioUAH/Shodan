@@ -1,9 +1,5 @@
 package com.uah.shodan_tfg.core.services.impl;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CancellationException;
@@ -67,12 +63,6 @@ public class TargetService implements ITargetService {
 	@Autowired
 	private HackedHostRepository hackedHostRepository;
 
-	// public FilterQueryDTO create(FilterQueryDTO filterDto) {
-	// FilterQuery filterDao = filterConverter.convert(filterDto);
-	// filterRepository.save(filterDao);
-	// return filterConverter.invert(filterDao);
-	// }
-
 	@Override
 	public List<HostDTO> create(FilterQueryDTO query, List<Banner> banners) {
 		FilterQuery filterQuery = filterConverter.convert(query);
@@ -96,14 +86,16 @@ public class TargetService implements ITargetService {
 		return filterConverter.invert(queries);
 	}
 
-	// @Override
-	// public void testSecurity(HostDTO host) {
-	// Integer port = host.getPort();
-	// String ip = host.getIp();
-	// Integer id = host.getId();
-	// fileService.writeReport(testSecurity(id, ip, port));
-	// }
-
+	/**
+	 * Select which type of protocol is going to be used in the test
+	 * 
+	 * @param host
+	 *            Tested device
+	 * @param wordlists
+	 *            List of wordlists (user and password)
+	 * 
+	 * @return Credentials found
+	 */
 	private String testSecurity(Host host, List<String> wordlists)
 			throws InterruptedException {
 		String result = "";
@@ -151,76 +143,18 @@ public class TargetService implements ITargetService {
 	}
 
 	@Override
-	public String sendMessage(String msg, BufferedReader in, PrintWriter out) {
-		out.println(msg);
-		String resp = "";
-		try {
-			resp = in.readLine();
-			System.out.println(resp);
-		} catch (IOException e) {
-			LOGGER.error(e.getMessage(), e);
-		}
-		return resp;
-	}
-
-	@Override
-	public void stopConnection(BufferedReader in, PrintWriter out,
-			Socket clientSocket) {
-		try {
-			in.close();
-			out.close();
-			clientSocket.close();
-		} catch (IOException e) {
-			LOGGER.error(e.getMessage(), e);
-		}
-	}
-
-	// public void testSecurity(Integer id, String ip, Integer port) {
-	// try {
-	// URL url = new URL(ip + ":" + port);
-	// HttpURLConnection con = (HttpURLConnection) url.openConnection();
-	// con.setRequestMethod("GET");
-	// con.setRequestProperty("Content-Type", "application/json");
-	// String contentType = con.getHeaderField("Content-Type");
-	// con.setConnectTimeout(5000);
-	// con.setReadTimeout(5000);
-	// int status = con.getResponseCode();
-	// if (status == HttpURLConnection.HTTP_MOVED_TEMP || status ==
-	// HttpURLConnection.HTTP_MOVED_PERM) {
-	// String location = con.getHeaderField("Location");
-	// URL newUrl = new URL(location);
-	// con = (HttpURLConnection) newUrl.openConnection();
-	// }
-	// BufferedReader in = new BufferedReader(new
-	// InputStreamReader(con.getInputStream()));
-	// String inputLine;
-	// StringBuffer content = new StringBuffer();
-	// while ((inputLine = in.readLine()) != null) {
-	// content.append(inputLine);
-	// }
-	// in.close();
-	// con.disconnect();
-	//
-	// System.out.println("Llamada realizada");
-	// } catch (MalformedURLException e2) {
-	// // TODO Auto-generated catch block
-	// e2.printStackTrace();
-	// } catch (ProtocolException e) {
-	// // TODO Auto-generated catch block
-	// LOGGER.error(e.getMessage(), e);
-	// } catch (IOException e1) {
-	// // TODO Auto-generated catch block
-	// e1.printStackTrace();
-	// }
-	// System.out.println();
-	//
-	// }
-
-	@Override
 	public Host findById(Integer id) {
 		return hostRepository.findById(id).orElse(null);
 	}
 
+	/**
+	 * Handles the testing process
+	 * 
+	 * @param dto
+	 *            IDs of the devices to be tested and the wordlists to be used.
+	 * 
+	 * @return Credentials found
+	 */
 	@Override
 	public String testSecurityByIds(TestDevicesDTO dto) {
 		String response = "";
@@ -262,9 +196,5 @@ public class TargetService implements ITargetService {
 	public Future<String> getReportsTask() {
 		return reportsTask;
 	}
-	// @Override
-	// public HackedHostDTO findHackedHostById(Integer id) {
-	// List<HackedHost> hackedHosts = hackedHostRepository.findAll();
-	// return hackedHostConverter.invert(hackedHosts);
-	// }
+
 }

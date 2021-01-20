@@ -83,7 +83,6 @@ export class TablaComponent implements OnInit {
   }
 
   testDevices(id) {
-    console.log(this.wordlists);
     let devices = id ? [id] : this.selection.selected.map(device => device.id);
     const dialogRef = this.dialog.open(TestSecurityModalComponent,
       {
@@ -127,7 +126,6 @@ export class TablaComponent implements OnInit {
     this.http.getCall(environment.url + REST_URL_STOP_TEST)
       .subscribe(data => {
         this.responseData = data;
-        console.log(this.responseData);
       },
         error => {
           console.log("Error", error);

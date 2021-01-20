@@ -24,6 +24,14 @@ public class FileService implements IFileService {
 
 	private static Logger LOGGER = Logger.getLogger(FileService.class);
 
+	/**
+	 * Reads all lines of a text file and stores them in a list
+	 * 
+	 * @param pathToFile
+	 *            Path to the file to be read from
+	 * 
+	 * @return wordlist List of the lines read.
+	 */
 	@Override
 	public List<String> fileToList(String pathToFile) {
 		List<String> wordlist = new ArrayList<>();
@@ -36,6 +44,14 @@ public class FileService implements IFileService {
 		return wordlist;
 	}
 
+	/**
+	 * Write a report of the credentials found for each host attacked. If no
+	 * credentials were found, the report will not be generated
+	 * 
+	 * @param reports
+	 *            List of the credentials found for each host.
+	 * 
+	 */
 	@Override
 	public void writeReport(List<String> reports) {
 		try {
@@ -53,6 +69,14 @@ public class FileService implements IFileService {
 		}
 	}
 
+	/**
+	 * Write a report of the credentials found for each host attacked. If no
+	 * credentials were found, the report will not be generated
+	 * 
+	 * @param reports
+	 *            Report to be generated.
+	 * 
+	 */
 	@Override
 	public void writeReport(String report) {
 		try {
@@ -71,6 +95,13 @@ public class FileService implements IFileService {
 		}
 	}
 
+	/**
+	 * Saves a wordlist in the wordlists directory
+	 * 
+	 * @param file
+	 *            File to be saved.
+	 * 
+	 */
 	@Override
 	public void saveFile(MultipartFile file) {
 		InputStream inputStream = null;
@@ -100,6 +131,11 @@ public class FileService implements IFileService {
 		}
 	}
 
+	/**
+	 * Returns all the names of the wordlists inside "wordlists" directory
+	 * 
+	 * @return List of wordlists
+	 */
 	@Override
 	public List<String> findAllWordlists() {
 		List<String> fileList = new ArrayList<>();
@@ -118,18 +154,4 @@ public class FileService implements IFileService {
 		return fileList;
 	}
 
-	@Override
-	public List<String> createWordlist(List<String> wordlists) {
-		List<String> userPassList = new ArrayList<>();
-		List<String> userWordlist = fileToList("wordlists/" + wordlists.get(0));
-		List<String> passWordlist = fileToList("wordlists/" + wordlists.get(1));
-
-		for (String user : userWordlist) {
-			for (String pass : passWordlist) {
-				userPassList.add(user + ":" + pass);
-			}
-		}
-		return userPassList;
-
-	}
 }

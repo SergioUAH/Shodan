@@ -109,7 +109,6 @@ export class TestSecurityModalComponent implements OnInit, AfterViewInit {
     this.http.postCall(environment.url + REST_URL, dto)
       .subscribe(data => {
         this.responseData = data;
-        console.log(this.responseData);
         this.webSocket.closeConnection();
       },
         error => {

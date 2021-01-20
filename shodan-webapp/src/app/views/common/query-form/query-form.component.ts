@@ -81,7 +81,6 @@ export class QueryFormComponent implements OnInit, AfterViewInit {
     this.query = new QueryElement();
     this.stringQuery = "";
     this.formBuilder = new FormBuilder();
-    //this.createForm();
 
     this.filteredOptions = this.myControl.valueChanges.pipe(
       startWith(null),
@@ -91,7 +90,7 @@ export class QueryFormComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    console.log(this.filterInput);
+
   }
 
   add(event: MatChipInputEvent): void {

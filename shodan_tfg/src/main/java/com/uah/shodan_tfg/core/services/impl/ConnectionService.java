@@ -1,15 +1,7 @@
 package com.uah.shodan_tfg.core.services.impl;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpClient.Redirect;
-import java.net.http.HttpClient.Version;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -63,42 +55,16 @@ public class ConnectionService implements IConnectionService {
 	@Autowired
 	HackedHostRepository hackedHostRepository;
 
-	private HttpClient createHttpClient() {
-		HttpClient client = HttpClient.newBuilder().version(Version.HTTP_2)
-				.followRedirects(Redirect.NORMAL)
-				.connectTimeout(Duration.ofSeconds(20))// .authenticator(Authenticator.getDefault())
-				.build();
-		return client;
-	}
-
-	@Override
-	public String makeHttpRequest(Host host) {
-		String body = null;
-		HttpClient client = createHttpClient();
-		HttpRequest request = HttpRequest.newBuilder().GET()
-				.uri(URI.create(
-						"http://" + host.getIp() + ":" + host.getPort()))
-				.setHeader("User-Agent", "Java 11 HttpClient Bot") // add
-																	// request
-																	// header
-				.build();
-		try {
-			// HttpResponse<String> response = client.send(request,
-			// HttpResponse.BodyHandlers.ofString());
-
-			var future = client.sendAsync(request,
-					HttpResponse.BodyHandlers.ofString());
-			body = future.thenApply(HttpResponse::body).get();
-			System.out.println(body);
-			messageController.send(body);
-		} catch (InterruptedException e) {
-			LOGGER.error(e.getMessage(), e);
-		} catch (ExecutionException e) {
-			LOGGER.error(e.getMessage(), e);
-		}
-		return body;
-	}
-
+	/**
+	 * Performs brute-force attacks through HTTP and HTTPS protocols
+	 * 
+	 * @param host
+	 *            Host targeted by the attack
+	 * @param wordlists
+	 *            List of paths of the wordlists used for user and password
+	 * @return Credentials found
+	 * @throws InterruptedException
+	 */
 	@Override
 	@Async
 	public Future<String> webAuthLogin(Host host, List<String> wordlists)
@@ -172,12 +138,6 @@ public class ConnectionService implements IConnectionService {
 						try {
 							page = webClient.getPage(protocol + host.getIp()
 									+ ":" + host.getPort());
-
-							// final List<HtmlForm> forms = page.getForms();
-
-							// if(!forms.isEmpty()) {
-							// final HtmlForm form = page.getForms().get(0);
-							// }
 
 							final HtmlTextInput userField = (HtmlTextInput) page
 									.getByXPath(
@@ -278,6 +238,16 @@ public class ConnectionService implements IConnectionService {
 
 	}
 
+	/**
+	 * Performs brute-force attacks on FTP servers through FTP protocol
+	 * 
+	 * @param host
+	 *            Host targeted by the attack
+	 * @param wordlists
+	 *            List of paths of the wordlists used for user and password
+	 * @return Credentials found
+	 * @throws InterruptedException
+	 */
 	@Override
 	@Async
 	public Future<String> connectToFtpServer(Host host, List<String> wordlists)
@@ -388,22 +358,6 @@ public class ConnectionService implements IConnectionService {
 						}
 					}
 				}
-				// result = ftpClient.getReplyString();
-				// System.out.println("FTP Server login response --> " +
-				// result);
-				// messageController.send("FTP Server login response --> " +
-				// result);
-				// ftpClient.enterLocalPassiveMode();
-				// FTPFile[] directories = ftpClient.listDirectories();
-				// System.out.println("SUCCESS - FPT Directories --> " +
-				// directories.toString());
-				// messageController.send("SUCCESS - FPT Directories --> " +
-				// directories.toString());
-				// FTPFile[] files = ftpClient.listFiles();
-				// System.out.println("SUCCESS - FTP Files--> " +
-				// files.toString());
-				// messageController.send("SUCCESS - FTP Files--> " +
-				// files.toString());
 			} else if (FTPReply.isPositiveIntermediate(replyCode)) {
 				System.out.println("SUCCESS - May need login --> " + replyCode);
 				messageController
@@ -420,6 +374,24 @@ public class ConnectionService implements IConnectionService {
 		return new AsyncResult<String>(finalResult);
 	}
 
+	/**
+	 * Generates a tree of folders of an accessed FTP host
+	 * 
+	 * @param ftpClient
+	 *            FTP Client
+	 * @param currentDirectory
+	 *            Path of the current directory
+	 * @param parentDirectory
+	 *            Path of the parent directory
+	 * @param deep
+	 *            Layer of the tree
+	 * @param currentDirectory
+	 *            Path of the current directory
+	 * @param result
+	 *            Path of the current file/folder
+	 * @return Tree of folders
+	 * @throws IOException
+	 */
 	private String generateFTPTree(FTPClient ftpClient, String currentDirectory,
 			String parentDirectory, Integer deep, String result)
 			throws IOException {
@@ -441,8 +413,6 @@ public class ConnectionService implements IConnectionService {
 				if (file.isDirectory()) {
 					System.out.println("\\-->" + fileName);
 					result += "\\-->" + fileName + "\n";
-					// result = generateFTPTree(ftpClient, nextDir, fileName,
-					// deep + 1, result);
 				} else {
 					System.out.println(fileName);
 					result += fileName + "\n";
@@ -452,9 +422,20 @@ public class ConnectionService implements IConnectionService {
 		return result;
 	}
 
+	/**
+	 * Performs brute-force attacks on hosts through SSH protocol
+	 * 
+	 * @param host
+	 *            Host targeted by the attack
+	 * @param wordlists
+	 *            List of paths of the wordlists used for user and password
+	 * @return Credentials found
+	 * @throws InterruptedException
+	 */
 	@Override
 	@Async
-	public Future<String> connectThroughSSH(Host host, List<String> wordlists) {
+	public Future<String> connectThroughSSH(Host host, List<String> wordlists)
+			throws InterruptedException {
 		String ip = host.getIp();
 		List<String> userWordlist = fileService
 				.fileToList("wordlists/" + wordlists.get(0));
@@ -545,52 +526,5 @@ public class ConnectionService implements IConnectionService {
 		return new AsyncResult<String>(finalResult);
 
 	}
-
-	@Override
-	public String connectThroughTelnet(Host host, List<String> wordlists) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	// public void testSecurity(Integer id, String ip, Integer port) {
-	// try {
-	// URL url = new URL(ip + ":" + port);
-	// HttpURLConnection con = (HttpURLConnection) url.openConnection();
-	// con.setRequestMethod("GET");
-	// con.setRequestProperty("Content-Type", "application/json");
-	// String contentType = con.getHeaderField("Content-Type");
-	// con.setConnectTimeout(5000);
-	// con.setReadTimeout(5000);
-	// int status = con.getResponseCode();
-	// if (status == HttpURLConnection.HTTP_MOVED_TEMP || status ==
-	// HttpURLConnection.HTTP_MOVED_PERM) {
-	// String location = con.getHeaderField("Location");
-	// URL newUrl = new URL(location);
-	// con = (HttpURLConnection) newUrl.openConnection();
-	// }
-	// BufferedReader in = new BufferedReader(new
-	// InputStreamReader(con.getInputStream()));
-	// String inputLine;
-	// StringBuffer content = new StringBuffer();
-	// while ((inputLine = in.readLine()) != null) {
-	// content.append(inputLine);
-	// }
-	// in.close();
-	// con.disconnect();
-	//
-	// System.out.println("Llamada realizada");
-	// } catch (MalformedURLException e2) {
-	// // TODO Auto-generated catch block
-	// e2.printStackTrace();
-	// } catch (ProtocolException e) {
-	// // TODO Auto-generated catch block
-	// LOGGER.error(e.getMessage(), e);
-	// } catch (IOException e1) {
-	// // TODO Auto-generated catch block
-	// e1.printStackTrace();
-	// }
-	// System.out.println();
-	//
-	// }
 
 }
